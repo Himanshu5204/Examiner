@@ -20,6 +20,13 @@ const teacher = new mongoose.Schema({
         require: true,
         trim: true,
         minlength: 8
+    },
+
+    course: {
+        type: String,
+        require: true,
+        trim: true,
+        minlength: 8
     }
 
 }, { timestamps: true });
