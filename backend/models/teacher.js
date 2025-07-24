@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 
 const teacher = new mongoose.Schema({
+    teacher_id: {
+        type: String,
+        require: true,
+        unique: true,
+        trim: true,
+    },
+
     name: {
         type: String,
         require: true,
@@ -22,15 +29,15 @@ const teacher = new mongoose.Schema({
         minlength: 8
     },
 
-    course: {
+    contact: {
         type: String,
         require: true,
         trim: true,
-        minlength: 8
+        minlength: 10
     }
 
 }, { timestamps: true });
 
 const Teacher = mongoose.model("Teacher", teacher);
 
-exports.module = Teacher;
+module.exports = Teacher;

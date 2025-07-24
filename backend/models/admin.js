@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 
-const student = new mongoose.Schema({
-
-    student_id: {
+const admin = new mongoose.Schema({
+    admin_id: {
         type: String,
         require: true,
         unique: true,
@@ -35,10 +34,10 @@ const student = new mongoose.Schema({
         require: true,
         trim: true,
         minlength: 10
-    }
+    },
 
 }, { timestamps: true });
 
-const Student = mongoose.model("Student", student);
+const Admin = mongoose.model("Admin", admin);
 
-module.exports = Student;
+module.exports = Admin;

@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
-const student = new mongoose.Schema({
+const exam = new mongoose.Schema({
 
-    student_id: {
+    exam_id: {
         type: String,
         require: true,
         unique: true,
         trim: true,
     },
 
-    name: {
+    teacher_id: {
         type: String,
         require: true,
         trim: true,
@@ -17,28 +17,36 @@ const student = new mongoose.Schema({
         maxlength: 50
     },
 
-    email: {
-        type: String,
-        require: true,
-        trim: true,
-    },
-
-    password: {
+    course_id: {
         type: String,
         require: true,
         trim: true,
         minlength: 8
     },
 
-    contact: {
+    code: {
         type: String,
         require: true,
         trim: true,
-        minlength: 10
-    }
+        minlength: 8
+    },
 
+    live: {
+        type: Boolean,
+        default: false,
+    },
+
+    startTime: {
+        type: Date,
+        require: true
+    },
+
+    endTime: {
+        type: Date,
+        require: true
+    },
 }, { timestamps: true });
 
-const Student = mongoose.model("Student", student);
+const Exam = mongoose.model("Exam", exam);
 
-module.exports = Student;
+module.exports = Exam;

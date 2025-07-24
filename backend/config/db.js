@@ -13,8 +13,7 @@ module.exports = connectDB = async () => {
 
     } catch (error) {
 
-        console.error("Error_Connecting_MongoDB:", error);
-
+        console.error("Error_Connecting_MongoDB: ", error);
         //exit with failure
         process.exit(1);
 
