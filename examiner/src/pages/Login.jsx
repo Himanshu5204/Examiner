@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const Login = () => {
   const [form, setForm] = useState({
-    role: 'student',
+    role: 'student', //default role 
     email: '',
     password: ''
   });
@@ -13,20 +13,23 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('http://localhost:8000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      });
-      const data = await res.json();
-      setMessage(data.message);
-    } catch (err) {
-      setMessage('Login failed');
+  e.preventDefault();
+  try {
+    const res = await fetch('http://localhost:8000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form)
+    });
+    const data = await res.json();
+    setMessage(data.message);
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      // Optionally redirect to dashboard
     }
-  };
-
+  } catch (err) {
+    setMessage('Login failed');
+  }
+};
   return (
     <div className="container mt-5" style={{ maxWidth: "500px" }}>
       <h2 className="text-center mb-4">Login</h2>

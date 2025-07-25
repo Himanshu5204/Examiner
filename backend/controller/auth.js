@@ -6,6 +6,8 @@
 // auth.js data validation and pass for api called from routes/authentication.js
 // This file handles user signup and login functionalities
 
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = 'Himanshu@123';
 const express = require('express');
 const bcrypt = require('bcrypt');
 const { createAdmin, createStudent, createTeacher } = require('../utils/createUser');
@@ -43,7 +45,12 @@ const login = async (req, res) => {
 
     //user password matching
     if (await bcrypt.compare(password, user.password)) {
-      res.status(200).json({ message: 'User Succesfully login', user });
+      const token = jwt.sign(
+        { id: user._id, role: user.role, email: user.email }, // payload
+        JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+      res.status(200).json({ message: 'User Successfully login', token, user });
       return;
     }
 
