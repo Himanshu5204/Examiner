@@ -4,20 +4,21 @@ const Student = require("../models/student");
 const Teacher = require("../models/teacher");
 
 //creating student
+const bcrypt = require('bcrypt');
+
 const createStudent = async (data) => {
     const { student_id, name, email, password, contact } = data;
-
-    const newStudent = new Student({ student_id, name, email, password, contact });
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+    const newStudent = new Student({ student_id, name, email, password: hashedPassword, contact });
     await newStudent.save();
-
     return newStudent;
 }
 
 //creating admin
 const createAdmin = async (data) => {
     const { admin_id, name, email, password, contact } = data;
-
-    const newAdmin = new Admin({ admin_id, name, email, password, contact });
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+    const newAdmin = new Admin({ admin_id, name, email, password: hashedPassword, contact });
     await newAdmin.save();
 
     return newAdmin;
@@ -26,8 +27,8 @@ const createAdmin = async (data) => {
 //creating teacher
 const createTeacher = async (data) => {
     const { teacher_id, name, email, password, contact } = data;
-
-    const newTeacher = new Teacher({ teacher_id, name, email, password, contact });
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+    const newTeacher = new Teacher({ teacher_id, name, email, password: hashedPassword, contact });
     await newTeacher.save();
 
     return newTeacher;
