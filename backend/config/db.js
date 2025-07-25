@@ -1,3 +1,4 @@
+// config/db.js for database connectivity setups
 const mongoose = require('mongoose');
 
 /*

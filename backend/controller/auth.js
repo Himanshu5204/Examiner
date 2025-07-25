@@ -1,10 +1,19 @@
+// For api logic related to authentication
+
+// use data of utils/createUser.js 
+// It uses utility functions to create users and get the appropriate database schema based on user roles.
+
+// auth.js data validation and pass for api called from routes/authentication.js
+// This file handles user signup and login functionalities
+
+
 const express = require('express');
 const {
     createAdmin,
     createStudent,
     createTeacher
 } = require('../utils/createUser');
-
+const getSchema = require('../utils/getSchema')
 //IMPORTANT 'Status Code'
 // 200 -> OK(request fullfilled)
 // 201 -> Create new resources
@@ -19,7 +28,7 @@ getSchema:
     - is object mapping {"role":"databaseSchema"}
     - easily accesible through 'utils'
 */
-const getSchema = require('../utils/getSchema')
+
 const login = async (req, res) => {
     const { role, email, password } = req.body;
 
