@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link , useNavigate} from 'react-router-dom';
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -12,7 +12,7 @@ const Login = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -25,7 +25,8 @@ const Login = () => {
       setMessage(data.message);
       if (data.token) {
         localStorage.setItem('token', data.token);
-        // Optionally redirect to dashboard
+        // Redirect to home after login 
+        navigate('/');
       }
     } catch (err) {
       setMessage('Login failed');
