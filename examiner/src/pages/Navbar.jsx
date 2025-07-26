@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light px-4">
       <Link className="navbar-brand" to="/">
@@ -55,20 +57,34 @@ const Navbar = () => {
                   Something else
                 </Link>
               </li>
+              <li>
+                {user && <p>Welcome, {user.name}</p>}
+              </li>
             </ul>
           </li>
 
-          <li className="nav-item">
-            <Link className="nav-link" to="/signup">
-              Signup
-            </Link>
-          </li>
 
-          <li className="nav-item">
-            <Link className="nav-link" to="/login">
-              Login
-            </Link>
-          </li>
+          {!user && (
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/signup">Signup</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">Login</Link>
+              </li>
+            </>
+          )}
+          {user && (
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/profile">Profile</Link>
+              </li>
+              <li className="nav-item">
+                <button className="nav-link btn btn-link" onClick={logout}>Logout</button>
+              </li>
+            </>
+          )}
+
         </ul>
 
         <form className="d-flex" role="search" onSubmit={(e) => e.preventDefault()}>

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Signup = () => {
   const [form, setForm] = useState({
     role: 'student',
-    student_id: '',
+    id: '', // generic id field
     name: '',
     email: '',
     password: '',
@@ -17,11 +18,26 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Prepare payload with correct id field
+    let payload = {
+      role: form.role,
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      contact: form.contact
+    };
+    if (form.role === 'student') {
+      payload.student_id = form.id;
+    } else if (form.role === 'teacher') {
+      payload.teacher_id = form.id;
+    } else if (form.role === 'admin') {
+      payload.admin_id = form.id;
+    }
     try {
       const res = await fetch('http://localhost:8000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       setMessage(data.message);
@@ -50,16 +66,20 @@ const Signup = () => {
           </select>
         </div>
 
-        {/* Student ID */}
+        {/* ID input, label changes by role */}
         <div className="mb-3">
-          <label htmlFor="student_id" className="form-label">ID</label>
+          <label htmlFor="id" className="form-label">
+            {form.role === 'student' && 'Student ID'}
+            {form.role === 'teacher' && 'Teacher ID'}
+            {form.role === 'admin' && 'Admin ID'}
+          </label>
           <input
             type="text"
             className="form-control"
-            id="student_id"
-            name="student_id"
-            placeholder="Enter your ID"
-            value={form.student_id}
+            id="id"
+            name="id"
+            placeholder={form.role.charAt(0).toUpperCase() + form.role.slice(1) + ' ID'}
+            value={form.id}
             onChange={handleChange}
             required
           />
