@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, redirect, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -15,7 +15,7 @@ const Signup = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Prepare payload with correct id field
@@ -41,6 +41,12 @@ const Signup = () => {
       });
       const data = await res.json();
       setMessage(data.message);
+      // or data.success === true if your API returns it
+      if (res.ok) {
+        navigate('/login', { state: { message: 'User created successfully' } }); 
+      } else {
+        setMessage(data.message || 'Signup failed');
+      }
     } catch (err) {
       setMessage('Signup failed');
     }
@@ -49,6 +55,8 @@ const Signup = () => {
   return (
     <div className='container mt-5' style={{ maxWidth: '600px' }}>
       <h2 className='text-center mb-4'>Signup</h2>
+      {/* Message display */}
+      {message && <div className='alert alert-info mt-3'>{message}</div>}
       <form onSubmit={handleSubmit}>
         {/* Role selection */}
         <div className='mb-3'>
@@ -154,9 +162,6 @@ const Signup = () => {
           Signup
         </button>
       </form>
-
-      {/* Message display */}
-      {message && <div className='alert alert-info mt-3'>{message}</div>}
 
       <div className='text-center mt-3'>
         Already have an account? <Link to='/login'>Login here</Link>
