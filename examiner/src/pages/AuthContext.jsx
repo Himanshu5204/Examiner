@@ -8,17 +8,65 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Check for token in localStorage
     const token = localStorage.getItem('token');
     if (token) {
-      // You can fetch user info from backend using token if needed
-      setUser({ token }); // Simplified, ideally fetch user details
+      fetch('http://localhost:8000/api/auth/getUser', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(async (res) => {
+          if (res.status === 401 || res.status === 403) {
+            setUser(null);
+            localStorage.removeItem('token');
+            return;
+          }
+          const data = await res.json();
+          if (data && (data.user || data._id)) {
+            const userData = data.user || data;
+            setUser({ ...userData, token });
+          } else {
+            setUser(null);
+            localStorage.removeItem('token');
+          }
+        })
+        .catch(() => {
+          // Do not log out on network/server error, just keep user as is
+        });
     }
   }, []);
 
-  const login = (token) => {
+  // login now only accepts token, fetches user info
+  const login = async (token) => {
     localStorage.setItem('token', token);
-    setUser({ token });
+    try {
+      const res = await fetch('http://localhost:8000/api/auth/getUser', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.status === 401 || res.status === 403) {
+        setUser(null);
+        localStorage.removeItem('token');
+        return false;
+      }
+      const data = await res.json();
+      if (data && data.user) {
+        setUser({ ...data.user, token });
+        return true;
+      } else {
+        setUser(null);
+        localStorage.removeItem('token');
+        return false;
+      }
+    } catch {
+      // Do not log out on network/server error, just keep user as is
+      return false;
+    }
   };
 
   const logout = () => {
@@ -26,11 +74,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

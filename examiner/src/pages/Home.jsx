@@ -24,7 +24,7 @@ const Home = () => {
       <div className="container mt-4">
         {message && <div className='alert alert-success'>{message}</div>}
         <h2>Welcome to Home Page</h2>
-        <Profile />
+        
       </div>
     </>
   );

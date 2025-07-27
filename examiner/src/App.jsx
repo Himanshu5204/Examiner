@@ -4,11 +4,14 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Navbar from './pages/Navbar';
+import Profile from './pages/Profile';
+import { useAuth } from './pages/AuthContext';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
 const ProtectedRoute = ({ children }) => {
-  return isAuthenticated() ? children : <Navigate to="/login" replace />;
+  const { user } = useAuth();
+  return user ? children : <Navigate to='/login' replace />;
 };
 
 const Layout = ({ children }) => {
@@ -28,16 +31,17 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
           <Route
-            path="/"
+            path='/'
             element={
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>
             }
           />
+          <Route path='/profile' element={<Profile />} />
         </Routes>
       </Layout>
     </Router>

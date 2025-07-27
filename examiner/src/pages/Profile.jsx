@@ -18,7 +18,7 @@ const Profile = () => {
       <p><strong>Name:</strong> {userInfo.name}</p>
       <p><strong>Email:</strong> {userInfo.email}</p>
       <p><strong>Role:</strong> {userInfo.role}</p>
-      <button className="btn btn-secondary" onClick={() => setShowChangePassword(!showChangePassword)}>
+      <button className="btn btn-secondary mt-3" onClick={() => setShowChangePassword(!showChangePassword)}>
         Change Password
       </button>
       {showChangePassword && (
