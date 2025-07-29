@@ -12,6 +12,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const { createAdmin, createStudent, createTeacher } = require('../utils/createUser');
 const getSchema = require('../utils/getSchema');
+const fetchuser = require('../middleware/fetchuser');
+
 //IMPORTANT 'Status Code'
 // 200 -> OK(request fullfilled)
 // 201 -> Create new resources
@@ -32,6 +34,10 @@ const login = async (req, res) => {
 
   //change model role wise (student, teacher, admin)
   let model = getSchema[role];
+  if (!model) {
+    console.log('[ERROR] Invalid role', role);
+    return res.status(400).json({ message: 'Invalid role provided' });
+  }
 
   try {
     //usernot found
@@ -41,24 +47,39 @@ const login = async (req, res) => {
       return;
     }
 
-    console.log(user);
+    console.log('[LOGIN REQUEST]', { role, email, password });
+    console.log('Login request for:', email);
+    console.log('User from DB:', user);
+    console.log('User password:', user.password);
+    console.log('login password:', password);
 
     //user password matching
-    if (await bcrypt.compare(password, user.password)) {
+    const passwordCompare = await bcrypt.compare(password, user.password);
+    console.log('Password match result:', passwordCompare);
+    if (passwordCompare) {
       const token = jwt.sign(
         { id: user._id, role: user.role, email: user.email }, // payload
         JWT_SECRET,
         { expiresIn: '1h' }
       );
+      console.log('Generated Token:', token);
       res.status(200).json({ message: 'User Successfully login', token, user });
       return;
     }
-
-    res.status(403).json({ message: 'Unauthorized' });
+    res.status(403).json({ message: 'Unauthorized User' });
   } catch (error) {
     console.error('Error_Authentication_Login_User(' + role + '): ' + error);
     res.status(500).json({ message: 'Internal Server Error ' });
   }
+};
+
+// getUser controller: just return req.user (populated by fetchuser middleware)
+const getUser = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'User not authenticated' });
+  }
+  console.log('Fetched user:', req.user);
+  res.status(200).json({ user: req.user });
 };
 
 /*
@@ -70,6 +91,7 @@ const getFunction = {
   teacher: createTeacher,
   admin: createAdmin
 };
+
 const signup = async (req, res) => {
   const { role, email } = req.body;
 
@@ -81,7 +103,6 @@ const signup = async (req, res) => {
       res.status(409).json({ message: 'User already exists' });
       return;
     }
-
     //This finction return promise to save user
     //await it then user will saved
     const signupUserFunction = getFunction[role];
@@ -89,9 +110,13 @@ const signup = async (req, res) => {
 
     res.status(201).json({ message: 'User created succesfully', user });
   } catch (error) {
+    if (error.code === 11000) {
+      // Duplicate key error (MongoDB unique index)
+      return res.status(400).json({ message: 'ID or Email already exists' });
+    }
     console.error('Error_Authentication_Signup_User(' + role + '): ' + error);
     res.status(500).json({ message: 'Internal Server Error ' });
   }
 };
 
-module.exports = { login, signup };
+module.exports = { login, signup, getUser, fetchuser };

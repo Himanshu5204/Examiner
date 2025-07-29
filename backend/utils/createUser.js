@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const createStudent = async (data) => {
     const { student_id, name, email, password, contact } = data;
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
-    const newStudent = new Student({ student_id, name, email, password: hashedPassword, contact });
+    const newStudent = new Student({ student_id, name, email, password: hashedPassword, contact, role: 'student' });
     await newStudent.save();
     return newStudent;
 }
@@ -18,7 +18,7 @@ const createStudent = async (data) => {
 const createAdmin = async (data) => {
     const { admin_id, name, email, password, contact } = data;
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
-    const newAdmin = new Admin({ admin_id, name, email, password: hashedPassword, contact });
+    const newAdmin = new Admin({ admin_id, name, email, password: hashedPassword, contact,role: 'admin' });
     await newAdmin.save();
 
     return newAdmin;
@@ -28,7 +28,7 @@ const createAdmin = async (data) => {
 const createTeacher = async (data) => {
     const { teacher_id, name, email, password, contact } = data;
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
-    const newTeacher = new Teacher({ teacher_id, name, email, password: hashedPassword, contact });
+    const newTeacher = new Teacher({ teacher_id, name, email, password: hashedPassword, contact,role: 'teacher' });
     await newTeacher.save();
 
     return newTeacher;
