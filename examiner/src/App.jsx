@@ -5,7 +5,11 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Navbar from './pages/Navbar';
 import Profile from './pages/Profile';
-import { useAuth } from './pages/AuthContext';
+import AdminDashboard from './pages/AdminDashboard';
+import TeacherDashboard from './pages/TeacherDashboard';
+import StudentDashboard from './pages/StudentDashboard';
+import { useAuth } from './pages/Context/AuthContext';
+import ExamPage from './pages/StudentExam/ExamPage';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -42,6 +46,31 @@ function App() {
             }
           />
           <Route path='/profile' element={<Profile />} />
+          <Route
+            path='/AdminDashboard'
+            element={
+              <ProtectedRoute roles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/TeacherDashboard'
+            element={
+              <ProtectedRoute roles={['teacher']}>
+                <TeacherDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/StudentDashboard'
+            element={
+              <ProtectedRoute roles={['student']}>
+                <StudentDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/student/exam/:examId" element={<ExamPage />} />
         </Routes>
       </Layout>
     </Router>
