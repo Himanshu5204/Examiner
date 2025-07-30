@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import { useAuth } from './Context/AuthContext';
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -35,10 +35,19 @@ const Login = () => {
       // Check if login was successful by checking if user is set
       // Optionally, you can check user from context here if needed
 
-      if (data.token) {
+      if (data.token && data.user) {
         const success = await login(data.token);
         if (success) {
-          navigate('/', { state: { message: 'Login successful' } });
+          const userRole = data.user.role;
+          console.log('User role:', userRole);
+          // Redirect based on user role
+          if (userRole === 'admin') {
+            navigate('/AdminDashboard', { state: { message: 'Welcome Admin!' } });
+          } else if (userRole === 'teacher') {
+            navigate('/TeacherDashboard', { state: { message: 'Welcome Teacher!' } });
+          } else {
+            navigate('/StudentDashboard', { state: { message: 'Welcome Student!' } });
+          }
         } else {
           setMessage('Unable to fetch user details.');
         }
