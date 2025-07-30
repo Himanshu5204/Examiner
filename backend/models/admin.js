@@ -35,6 +35,7 @@ const admin = new mongoose.Schema({
         trim: true,
         minlength: 10
     },
+
     role: {
         type: String,
         default: 'admin'

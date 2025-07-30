@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(cors());
 
 //ROUTES
-app.use('/api/auth', authentication)
+app.use('/api/auth', authentication); //all user authentication
 app.use('/api/admin', adminRoutes);
 app.use('/api/teacher', teacherRoutes);
 app.use('/api/student', studentRoutes);

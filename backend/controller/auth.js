@@ -1,3 +1,12 @@
+//IMPORTANT 'Status Code'
+// 200 -> OK(request fullfilled)
+// 201 -> Create new resources
+// 204 -> User not found / user not exist on Database
+// 400 => mistake from client/user side (missing values, incorrect data)
+// 403 -> Invalid credentials
+// 409 -> Resource already exist
+// 500 -> Internal server error
+
 // For api logic related to authentication
 
 // use data of utils/createUser.js
@@ -8,26 +17,24 @@
 
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'Himanshu@123';
-const express = require('express');
 const bcrypt = require('bcrypt');
-const { createAdmin, createStudent, createTeacher } = require('../utils/createUser');
-const getSchema = require('../utils/getSchema');
-const fetchuser = require('../middleware/fetchuser');
 
-//IMPORTANT 'Status Code'
-// 200 -> OK(request fullfilled)
-// 201 -> Create new resources
-// 204 -> User not found / user not exist on Database
-// 400 => mistake from client/user side (missing values, incorrect data)
-// 403 -> Invalid credentials
-// 409 -> Resource already exist
-// 500 -> Internal server error
+const {
+  createAdmin,
+  createStudent,
+  createTeacher
+} = require('../utils/createUser');
+const fetchuser = require('../middleware/fetchuser');
 
 /*
 getSchema:
-    - is object mapping {"role":"databaseSchema"}
-    - easily accesible through 'utils'
+- is object mapping {"role":"databaseSchema"}
+- easily accesible through 'utils'
 */
+const getSchema = require('../utils/getSchema');
+
+
+
 
 const login = async (req, res) => {
   const { role, email, password } = req.body;
@@ -47,26 +54,27 @@ const login = async (req, res) => {
       return;
     }
 
-    console.log('[LOGIN REQUEST]', { role, email, password });
-    console.log('Login request for:', email);
-    console.log('User from DB:', user);
-    console.log('User password:', user.password);
-    console.log('login password:', password);
-
     //user password matching
     const passwordCompare = await bcrypt.compare(password, user.password);
     console.log('Password match result:', passwordCompare);
-    if (passwordCompare) {
-      const token = jwt.sign(
-        { id: user._id, role: user.role, email: user.email }, // payload
-        JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-      console.log('Generated Token:', token);
-      res.status(200).json({ message: 'User Successfully login', token, user });
+
+    //password is wrong
+    if (!passwordCompare) {
+      res.status(403).json({ message: 'Unauthorized User' });
       return;
     }
-    res.status(403).json({ message: 'Unauthorized User' });
+
+    //generating token with (_id, role, email) for 1h
+    const token = jwt.sign(
+      { id: user._id, role: user.role, email: user.email }, // payload
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    console.log('Generated Token:', token);
+
+    //return toke for storing inside client's browser
+    res.status(200).json({ message: 'User Successfully login', token, user });
+
   } catch (error) {
     console.error('Error_Authentication_Login_User(' + role + '): ' + error);
     res.status(500).json({ message: 'Internal Server Error ' });
@@ -75,9 +83,14 @@ const login = async (req, res) => {
 
 // getUser controller: just return req.user (populated by fetchuser middleware)
 const getUser = (req, res) => {
+
+  //After calling middleware fetchUser
+  //check user found while authenticate or not
   if (!req.user) {
     return res.status(401).json({ message: 'User not authenticated' });
   }
+
+  //sendig data to frontend
   console.log('Fetched user:', req.user);
   res.status(200).json({ user: req.user });
 };
@@ -92,28 +105,61 @@ const getFunction = {
   admin: createAdmin
 };
 
+//token generated via jwt(_id, role, email) -> stored in localstorage
+//This token used when user made request to backend.
+//helps identify user is authenticate or not
 const signup = async (req, res) => {
+
   const { role, email } = req.body;
 
   let model = getSchema[role];
+
   try {
-    //user not found
+
     let user = await model.findOne({ email });
+
+
+    //user found in database
     if (user) {
       res.status(409).json({ message: 'User already exists' });
       return;
     }
+
+
+    if (role == 'admin') {
+
+      let alreadyExistAdmin = await model.find({});
+
+      //admin exist -> not able to create another admin
+      if (alreadyExistAdmin.length > 0) {
+        res.status(409).json({ message: 'Admin should be One' });
+        return;
+      }
+    }
+
+
     //This finction return promise to save user
     //await it then user will saved
     const signupUserFunction = getFunction[role];
     user = await signupUserFunction(req.body);
 
-    res.status(201).json({ message: 'User created succesfully', user });
+    //creating token while login
+    const token = jwt.sign(
+      { id: user._id, role: user.role, email: user.email }, // payload
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(201).json({ message: 'User created succesfully', user, token });
+
   } catch (error) {
+
+    // Duplicate key error (MongoDB unique index)
     if (error.code === 11000) {
-      // Duplicate key error (MongoDB unique index)
+      console.error("Duplicate_Entry_Error in MongoDB");
       return res.status(400).json({ message: 'ID or Email already exists' });
     }
+
     console.error('Error_Authentication_Signup_User(' + role + '): ' + error);
     res.status(500).json({ message: 'Internal Server Error ' });
   }
