@@ -4,7 +4,7 @@ const router = express.Router();
 const fetchuser = require('../middleware/fetchuser');
 
 //common routes for all roles
-router.post('/signup', signup)
+router.post('/signup', signup);
 router.post('/login', login);
 
 //check user validity with token

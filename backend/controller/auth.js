@@ -7,18 +7,20 @@
 // 409 -> Resource already exist
 // 500 -> Internal server error
 
-// For api logic related to authentication
 
-// use data of utils/createUser.js
-// It uses utility functions to create users and get the appropriate database schema based on user roles.
-
-// auth.js data validation and pass for api called from routes/authentication.js
-// This file handles user signup and login functionalities
+/*
+* This file contains:
+* signup:
+*   - (Admin) Should be one in entire college:
+*   - (Teacher) eligible if exists TeacherList's:
+*   - (Student) eligible if exists StudentList's:
+* signup:
+*   - (user) should have token or email&password to login
+*/
 
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'Himanshu@123';
 const bcrypt = require('bcrypt');
-
 const {
   createAdmin,
   createStudent,
@@ -26,18 +28,18 @@ const {
 } = require('../utils/createUser');
 const fetchuser = require('../middleware/fetchuser');
 
-/*
-getSchema:
-- is object mapping {"role":"databaseSchema"}
-- easily accesible through 'utils'
+/*(utility object)
+* getSchema:
+*  - is object mapping {"role":"databaseSchema"}
+*  - easily accesible through 'utils'
 */
 const getSchema = require('../utils/getSchema');
 
 
-
-
+// =========================Log in===================================
 const login = async (req, res) => {
   const { role, email, password } = req.body;
+  console.log(role + "=" + email);
 
   //change model role wise (student, teacher, admin)
   let model = getSchema[role];
@@ -63,17 +65,23 @@ const login = async (req, res) => {
       res.status(403).json({ message: 'Unauthorized User' });
       return;
     }
+    console.log("OLD: ", user.token);
 
     //generating token with (_id, role, email) for 1h
+
     const token = jwt.sign(
       { id: user._id, role: user.role, email: user.email }, // payload
       JWT_SECRET,
       { expiresIn: '1h' }
     );
-    console.log('Generated Token:', token);
+
+    // console.log('Generated Token(NEW):', token);
+
+    console.log(user)
+    await model.updateOne({ _id: user._id }, { token: token });
 
     //return toke for storing inside client's browser
-    res.status(200).json({ message: 'User Successfully login', token, user });
+    res.status(200).json({ message: 'User Successfully login', user });
 
   } catch (error) {
     console.error('Error_Authentication_Login_User(' + role + '): ' + error);
@@ -81,6 +89,9 @@ const login = async (req, res) => {
   }
 };
 
+
+
+// =========================Token Auth===================================
 // getUser controller: just return req.user (populated by fetchuser middleware)
 const getUser = (req, res) => {
 
@@ -95,9 +106,9 @@ const getUser = (req, res) => {
   res.status(200).json({ user: req.user });
 };
 
-/*
-getFunction:
-    - mapping of craete function according users
+/*(utility function)
+*  getFunction:
+*   - mapping of craete function according users
 */
 const getFunction = {
   student: createStudent,
@@ -105,9 +116,14 @@ const getFunction = {
   admin: createAdmin
 };
 
-//token generated via jwt(_id, role, email) -> stored in localstorage
-//This token used when user made request to backend.
-//helps identify user is authenticate or not
+
+
+// =========================Sign Up===================================
+/*
+* token generated via jwt(_id, role, email) -> stored in localstorage/cookie
+* This token used when user made request to backend.
+* helps identify user is authenticate or not
+*/
 const signup = async (req, res) => {
 
   const { role, email } = req.body;
@@ -125,7 +141,7 @@ const signup = async (req, res) => {
       return;
     }
 
-
+    //Admin should be one in entire college
     if (role == 'admin') {
 
       let alreadyExistAdmin = await model.find({});
@@ -141,16 +157,41 @@ const signup = async (req, res) => {
     //This finction return promise to save user
     //await it then user will saved
     const signupUserFunction = getFunction[role];
-    user = await signupUserFunction(req.body);
+
+    //contains {status, user}
+    const response = await signupUserFunction(req.body);
+
+
+    //if teacher/student loggined then other teacher/student use these mail is not allowed
+    if (response.status == 403) {
+      return res.status(403).json({ message: `${role} is already loggedin` });
+
+    }
+
+    //if teacher/student mail not found in lists
+    else if (response.status == 204) {
+      return res.status(403).json({ message: `${role} email is not found` });
+    }
+
+    //Error is something else
+    else if (response.status == 500) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+
+    user = response.user;
 
     //creating token while login
     const token = jwt.sign(
-      { id: user._id, role: user.role, email: user.email }, // payload
+      { id: user._id, role: role, email: user.email }, // payload
       JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    res.status(201).json({ message: 'User created succesfully', user, token });
+    //saving new token to user
+    user.token = token;
+    await user.save();
+
+    res.status(201).json({ message: 'User created succesfully', user });
 
   } catch (error) {
 

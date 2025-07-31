@@ -36,11 +36,25 @@ const teacher = new mongoose.Schema(
       trim: true,
       minlength: 10
     },
-    role: {
+
+    dept_code: {
       type: String,
-      default: 'teacher'
+      require: true,
+      trim: true
+    },
+
+    course_id: {
+      type: String,
+      require: true,
+      trim: true
+    },
+
+    token: {
+      type: String
     }
+  
   },
+
   { timestamps: true }
 );
 

@@ -36,9 +36,8 @@ const student = new mongoose.Schema({
         trim: true,
         minlength: 10
     },
-    role: {
-        type: String,
-        default: 'student'
+    token: {
+        type: String
     }
 
 }, { timestamps: true });
