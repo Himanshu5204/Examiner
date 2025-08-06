@@ -38,6 +38,7 @@ const getSchema = require('../utils/getSchema');
 
 // =========================Log in===================================
 const login = async (req, res) => {
+  console.log("=====================login=============================")
   const { role, email, password } = req.body;
   console.log(role + "=" + email);
 
@@ -65,21 +66,33 @@ const login = async (req, res) => {
       res.status(403).json({ message: 'Unauthorized User' });
       return;
     }
-    console.log("OLD: ", user.token);
 
     //generating token with (_id, role, email) for 1h
 
     const token = jwt.sign(
-      { id: user._id, role: user.role, email: user.email }, // payload
+      { id: user._id, role: role, email: user.email }, // payload
       JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    // console.log('Generated Token(NEW):', token);
 
-    console.log(user)
+    //Decoding data with secrate key
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    //This includes _id, email, role
+    console.log("Decoded data:", decoded);
+
+
+
+    console.log("OLD: ", user.token);
+    console.log('NEW:', token);
+
+    user.token = token;
+
+    console.log(user);
+
     await model.updateOne({ _id: user._id }, { token: token });
-
+    console.log("=====================endlogin=============================")
     //return toke for storing inside client's browser
     res.status(200).json({ message: 'User Successfully login', user });
 
@@ -100,7 +113,9 @@ const getUser = (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: 'User not authenticated' });
   }
-
+  console.log("====================getUser=======================")
+  console.log(req.user);
+  console.log("====================endgetUser=======================")
   //sendig data to frontend
   console.log('Fetched user:', req.user);
   res.status(200).json({ user: req.user });
@@ -125,7 +140,7 @@ const getFunction = {
 * helps identify user is authenticate or not
 */
 const signup = async (req, res) => {
-
+  console.log("=====================signup=============================")
   const { role, email } = req.body;
 
   let model = getSchema[role];
@@ -133,7 +148,6 @@ const signup = async (req, res) => {
   try {
 
     let user = await model.findOne({ email });
-
 
     //user found in database
     if (user) {
@@ -187,10 +201,18 @@ const signup = async (req, res) => {
       { expiresIn: '1h' }
     );
 
+
+    //Decoding data with secrate key
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    //This includes _id, email, role
+    console.log("Decoded data:", decoded);
+
+
     //saving new token to user
     user.token = token;
     await user.save();
-
+    console.log("=====================endsignup=============================")
     res.status(201).json({ message: 'User created succesfully', user });
 
   } catch (error) {

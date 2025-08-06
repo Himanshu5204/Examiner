@@ -36,6 +36,13 @@ const student = new mongoose.Schema({
         trim: true,
         minlength: 10
     },
+
+    gernder: {
+        type: String,
+        require: true,
+        trim: true,
+    },
+
     token: {
         type: String
     }

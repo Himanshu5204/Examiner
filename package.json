@@ -7,9 +7,11 @@
     "client": "cd examiner && npm run dev",
     "both": "npm run start"
   },
+
   "devDependencies": {
     "concurrently": "^9.2.0"
   },
+
   "dependencies": {
     "bcrypt": "^6.0.0",
     "jsonwebtoken": "^9.0.2",

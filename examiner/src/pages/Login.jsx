@@ -4,9 +4,9 @@ import { useAuth } from './Context/AuthContext';
 
 const Login = () => {
   const [form, setForm] = useState({
-    role: 'student', //default role
-    email: '',
-    password: ''
+    role: 'teacher', //default role
+    email: 'Jahan@gmail.com',
+    password: '@jahan'
   });
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,12 +16,17 @@ const Login = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const navigate = useNavigate();
+
   const { login } = useAuth();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setMessage('');
+
     try {
       const res = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
@@ -30,15 +35,19 @@ const Login = () => {
       });
       const data = await res.json();
       setMessage(data.message);
-      console.log('dataa', data);
-      console.log('dataa token', data.token);
+      console.log('dataa', data.user);
+      console.log('dataa token', data.user.token);
+      localStorage.setItem("token", data.user.token);
+
       // Check if login was successful by checking if user is set
       // Optionally, you can check user from context here if needed
 
-      if (data.token && data.user) {
-        const success = await login(data.token);
+      if (data.user && data.user.token) {
+
+        const success = await login(data.user.token, form.role);
+
         if (success) {
-          const userRole = data.user.role;
+          const userRole = form.role;
           console.log('User role:', userRole);
           // Redirect based on user role
           if (userRole === 'admin') {
@@ -52,12 +61,18 @@ const Login = () => {
           setMessage('Unable to fetch user details.');
         }
       }
+
     } catch (err) {
+
       setMessage('Login failed');
+
     } finally {
+
       setLoading(false);
+
     }
   };
+  
   return (
     <div className='container mt-5' style={{ maxWidth: '500px' }}>
       <h2 className='text-center mb-4'>Login</h2>

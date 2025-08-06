@@ -39,11 +39,13 @@ const createTeacher = async (data) => {
 
         //teacher not found on TeacherList
         if (!validTeacher) {
+            console.log("Not valid teacher");
             return { status: 204, user: null };
         }
 
         //teacher found but already signedin
         if (validTeacher.loggedin === true) {
+            console.log("Already register");
             return { status: 403, user: null };
         }
 
