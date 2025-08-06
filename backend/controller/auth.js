@@ -73,7 +73,7 @@ const login = async (req, res) => {
     console.log('Generated Token:', token);
 
     //return toke for storing inside client's browser
-    res.status(200).json({ message: 'User Successfully login', token, user });
+    res.status(200).json({ message: 'User Successfully login', token, user: user });
 
   } catch (error) {
     console.error('Error_Authentication_Login_User(' + role + '): ' + error);
