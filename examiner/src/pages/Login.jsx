@@ -48,7 +48,7 @@ const Login = () => {
         const success = await login(data.user.token);
 
         if (success) {
-          const userRole = form.role;
+          const userRole = data.user.role;
           console.log('User role:', userRole);
           // Redirect based on user role
           if (userRole === 'admin') {
