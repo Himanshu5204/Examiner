@@ -33,6 +33,7 @@ const Signup = () => {
     } else if (form.role === 'admin') {
       payload.admin_id = form.id;
     }
+    
     try {
       const res = await fetch('http://localhost:8000/api/auth/signup', {
         method: 'POST',

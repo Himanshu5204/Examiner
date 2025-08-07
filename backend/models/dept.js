@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 
 const dept = new mongoose.Schema({
-    code: {
+    dept_code: {
         type: String,
         require: true,
-        trim: true,
-        minlength: 8
+        trim: true
     },
 
     name: {

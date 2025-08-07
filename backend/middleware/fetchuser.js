@@ -4,12 +4,14 @@ const JWT_SECRET = 'Himanshu@123';
 
 //This middleware allows user(student, admin, teacher) to identify by just token
 const fetchuser = async (req, res, next) => {
-
+  console.log("===========================fetchuser===========================")
   // Get token from Authorization header
   const authHeader = req.headers.authorization;
   if (!authHeader) {
+    console.log("Token Not found");
     return res.status(401).json({ error: 'No token provided' });
   }
+  console.log("Token found");
 
   //Extract token from header
   //0th index is Beared
@@ -30,13 +32,18 @@ const fetchuser = async (req, res, next) => {
     */
 
     //Get the correct model based on role in token
+    console.log(req.query.role);
+    console.log(decoded.role);
     const model = getSchema[decoded.role];
-    if (!model) return res.status(400).json({ error: 'Invalid role' });
-
+    if (!model) {
+      console.log("Invalid role");
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+    console.log("valid role");
     //retrive user data from model without password
     const user = await model.findById(decoded.id).select('-password');
     if (!user) return res.status(404).json({ error: 'User not found' });
-
+    console.log("User found")
     req.user = user; // Attach user to request
 
     next(); //getUser()
@@ -45,7 +52,7 @@ const fetchuser = async (req, res, next) => {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ error: 'Invalid token' });
     }
-
+    console.log("===========================endfetchuser===========================")
     res.status(500).json({ error: 'Internal server error' });
   }
 };

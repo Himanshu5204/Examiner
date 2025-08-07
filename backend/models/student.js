@@ -36,9 +36,15 @@ const student = new mongoose.Schema({
         trim: true,
         minlength: 10
     },
-    role: {
+
+    gernder: {
         type: String,
-        default: 'student'
+        require: true,
+        trim: true,
+    },
+
+    token: {
+        type: String
     }
 
 }, { timestamps: true });

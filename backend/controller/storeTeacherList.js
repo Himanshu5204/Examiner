@@ -27,11 +27,14 @@ const storeTeacherList = async (req, res) => {
         });
 
         fs.unlinkSync(filePath);
-
+        
         res.json({ message: 'Excel file received and printed to console.' });
+
     } catch (error) {
+        
         console.error('Error:', error);
         res.status(500).json({ error: 'Failed to process Excel file' });
+
     }
 }
 

@@ -4,8 +4,7 @@ const course = new mongoose.Schema({
     course_id: {
         type: String,
         require: true,
-        trim: true,
-        minlength: 8
+        trim: true
     },
 
     name: {
@@ -14,6 +13,19 @@ const course = new mongoose.Schema({
         trim: true,
         lowercase: true,
         maxlength: 50
+    },
+
+    dept_code: {
+        type: String,
+        require: true,
+        trim: true
+    },
+
+    teacher_id: {
+        type: String,
+        require: true,
+        unique: true,
+        trim: true
     },
 });
 
