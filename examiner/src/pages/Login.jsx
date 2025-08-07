@@ -44,7 +44,8 @@ const Login = () => {
 
       if (data.user && data.user.token) {
 
-        const success = await login(data.user.token, form.role);
+        //get user from authcontext is called 
+        const success = await login(data.user.token);
 
         if (success) {
           const userRole = form.role;

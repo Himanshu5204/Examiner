@@ -31,6 +31,13 @@ const Layout = ({ children }) => {
 };
 
 function App() {
+  const { loading } = useAuth();
+
+  //first loading runs 
+  if (loading) {
+    return <div>Loading...</div>; // Or a spinner component
+  }
+
   return (
     <Router>
       <Layout>

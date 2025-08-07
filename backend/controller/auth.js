@@ -94,11 +94,7 @@ const login = async (req, res) => {
     await model.updateOne({ _id: user._id }, { token: token });
     console.log("=====================endlogin=============================")
     //return toke for storing inside client's browser
-<<<<<<< HEAD
     res.status(200).json({ message: 'User Successfully login', token, user: user });
-=======
-    res.status(200).json({ message: 'User Successfully login', user });
->>>>>>> 43ada4f4b3af7889921ade72603e1edd50d6be4b
 
   } catch (error) {
     console.error('Error_Authentication_Login_User(' + role + '): ' + error);
