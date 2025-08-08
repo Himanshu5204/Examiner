@@ -1,8 +1,23 @@
 // src/pages/Teacher/Sidebar.jsx
 import { BookOpen, Users, CalendarDays, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import React from 'react';
+import { useAuth } from '../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const Sidebar = () => {
+
+  //logout fun acessed from AuthContext + navigate on login so useNavigate
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  //function so onClick user can logout
+  const handleLogout = () => {
+    logout(); //fun called
+    navigate('/login');
+  };
+
   return (
     <div className="bg-white shadow-md h-screen p-4 flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-blue-600 mb-4">Teacher Panel</h1>
@@ -17,6 +32,7 @@ const Sidebar = () => {
           <CalendarDays /> Exams
         </Link>
         <Link to="/login" className="text-red-500 flex items-center gap-2 mt-auto">
+        <Link to="#" onClick={handleLogout} className="text-red-500 flex items-center gap-2 mt-auto">
           <LogOut /> Logout
         </Link>
       </nav>

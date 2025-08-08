@@ -10,6 +10,7 @@ import TeacherDashboard from './pages/TeacherDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import { useAuth } from './pages/Context/AuthContext';
 import ExamPage from './pages/StudentExam/ExamPage';
+import Spinner from './pages/Shared/Spinner';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -31,6 +32,12 @@ const Layout = ({ children }) => {
 };
 
 function App() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return <Spinner />;
+  }
+
   return (
     <Router>
       <Layout>
