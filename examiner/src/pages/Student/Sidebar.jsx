@@ -24,7 +24,7 @@ const Sidebar = () => {
           <FileText /> Results
         </NavLink>
         <NavLink
-          to="/logout"
+          to="/login"
           className="text-red-500 flex items-center gap-2 mt-auto"
         >
           <LogOut /> Logout

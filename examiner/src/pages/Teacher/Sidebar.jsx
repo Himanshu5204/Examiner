@@ -16,7 +16,7 @@ const Sidebar = () => {
         <Link to="/teacher/exams" className="hover:text-blue-500 flex items-center gap-2">
           <CalendarDays /> Exams
         </Link>
-        <Link to="/logout" className="text-red-500 flex items-center gap-2 mt-auto">
+        <Link to="/login" className="text-red-500 flex items-center gap-2 mt-auto">
           <LogOut /> Logout
         </Link>
       </nav>

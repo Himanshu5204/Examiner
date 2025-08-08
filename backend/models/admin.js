@@ -34,8 +34,10 @@ const admin = new mongoose.Schema({
         require: true,
         trim: true,
         minlength: 10
+    },
+    token: {
+        type: String
     }
-
 }, { timestamps: true });
 
 const Admin = mongoose.model("Admin", admin);

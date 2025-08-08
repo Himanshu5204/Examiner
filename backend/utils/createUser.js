@@ -14,7 +14,7 @@ const createStudent = async (data) => {
     const { student_id, name, email, password, contact } = data;
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
     const newStudent = new Student({ student_id, name, email, password: hashedPassword, contact, role: 'student' });
-    await newStudent.save();
+    // await newStudent.save();
     return newStudent;
 }
 
@@ -24,9 +24,9 @@ const createAdmin = async (data) => {
     const { admin_id, name, email, password, contact } = data;
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
     const newAdmin = new Admin({ admin_id, name, email, password: hashedPassword, contact, role: 'admin' });
-    await newAdmin.save();
+    // await newAdmin.save();
 
-    return newAdmin;
+    return { status: 200, user: newAdmin };
 }
 
 //creating teacher

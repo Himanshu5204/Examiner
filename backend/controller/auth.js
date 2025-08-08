@@ -211,6 +211,7 @@ const signup = async (req, res) => {
 
     //saving new token to user
     user.token = token;
+
     await user.save();
     console.log("=====================endsignup=============================")
     res.status(201).json({ message: 'User created succesfully', user });
