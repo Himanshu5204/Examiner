@@ -6,6 +6,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -29,11 +30,11 @@ export const AuthProvider = ({ children }) => {
             return;
           }
           const data = await res.json();
-          console.log("Fetched user data:", data.user); 
+          console.log("Fetched user data:", data.user);
           if (data && (data.user || data._id)) {
             const userData = data.user;
             setUser({ ...userData, token });
-            console.log(user , "<<<<<");
+            console.log(user, "<<<<<");
           } else {
             console.log("data and user not found");
             setUser(null);
@@ -43,12 +44,15 @@ export const AuthProvider = ({ children }) => {
         .catch((error) => {
           // Do not log out on network/server error, just keep user as is
           console.error(error);
-        });
+        })
+        .finally(() => setLoading(false));
     } else {
       console.log("Not found token");
+      setLoading(false);
     }
   }, []);
 
+  //getuser 
   // login now only accepts token, fetches user info
   const login = async (token, role) => {
     localStorage.setItem('token', token);
@@ -57,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
 
-      const res = await fetch(`http://localhost:8000/api/auth/getUser?role=${role}`, {
+      const res = await fetch(`http://localhost:8000/api/auth/getUser`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -77,8 +81,7 @@ export const AuthProvider = ({ children }) => {
       console.log("Success" + data);
 
       if (data && data.user) {
-        setUser({ ...data.user, token });
-        setUser({ ...data.user, role });
+        setUser({ ...data.user, token, role });
         return true;
       } else {
         setUser(null);
@@ -96,7 +99,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;
