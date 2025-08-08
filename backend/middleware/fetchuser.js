@@ -32,7 +32,7 @@ const fetchuser = async (req, res, next) => {
     */
 
     //Get the correct model based on role in token
-    console.log(req.query.role);
+    // console.log(req.query.role);
     console.log(decoded.role);
     const model = getSchema[decoded.role];
     if (!model) {
@@ -40,12 +40,18 @@ const fetchuser = async (req, res, next) => {
       return res.status(400).json({ error: 'Invalid role' });
     }
     console.log("valid role");
+
     //retrive user data from model without password
     const user = await model.findById(decoded.id).select('-password');
     if (!user) return res.status(404).json({ error: 'User not found' });
     console.log("User found")
-    req.user = user; // Attach user to request
 
+    user.role = decoded.role;
+    req.user = user; // Attach user to request
+    req.role = decoded.role;
+
+    console.log("REQ: ", req.user);
+    console.log("ROLE: ", req.role);
     next(); //getUser()
   } catch (error) {
 

@@ -13,6 +13,15 @@ const Home = () => {
   React.useEffect(() => {
     if (!user) {
       navigate('/login');
+    } else {
+      const { role } = user;
+      if (role === 'admin') {
+        navigate('/AdminDashboard', { state: { message: 'Welcome Admin!' } });
+      } else if (role === 'teacher') {
+        navigate('/TeacherDashboard', { state: { message: 'Welcome Teacher!' } });
+      } else {
+        navigate('/StudentDashboard', { state: { message: 'Welcome Student!' } });
+      }
     }
   }, [user, navigate]);
 

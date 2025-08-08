@@ -48,7 +48,11 @@ const Login = () => {
         const success = await login(data.user.token);
 
         if (success) {
-          const userRole = data.user.role;
+
+          //don't take data.user.role
+          const userRole = form.role;
+
+
           console.log('User role:', userRole);
           // Redirect based on user role
           if (userRole === 'admin') {
@@ -62,7 +66,6 @@ const Login = () => {
           setMessage('Unable to fetch user details.');
         }
       }
-
     } catch (err) {
 
       setMessage('Login failed');
@@ -73,7 +76,7 @@ const Login = () => {
 
     }
   };
-  
+
   return (
     <div className='container mt-5' style={{ maxWidth: '500px' }}>
       <h2 className='text-center mb-4'>Login</h2>

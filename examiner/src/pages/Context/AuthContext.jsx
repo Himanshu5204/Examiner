@@ -30,11 +30,13 @@ export const AuthProvider = ({ children }) => {
             return;
           }
           const data = await res.json();
-          console.log("Fetched user data:", data.user);
+          console.log("Fetched user data:", data.user, data.role);
           if (data && (data.user || data._id)) {
             const userData = data.user;
-            setUser({ ...userData, token });
-            console.log(user, "<<<<<");
+            setUser(userData);
+            setUser({ ...userData, role:data.role });
+            console.log(userData, "<<<<<");
+            // console.log(user, "<<<<<");
           } else {
             console.log("data and user not found");
             setUser(null);

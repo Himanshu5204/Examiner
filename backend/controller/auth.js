@@ -116,9 +116,10 @@ const getUser = (req, res) => {
   console.log("====================getUser=======================")
   console.log(req.user);
   console.log("====================endgetUser=======================")
+  // req.user.role = req.role;
   //sendig data to frontend
-  console.log('Fetched user:', req.user);
-  res.status(200).json({ user: req.user });
+  console.log('Fetched user:', req.user, req.role);
+  res.status(200).json({ user: req.user, role: req.role });
 };
 
 /*(utility function)
@@ -201,13 +202,11 @@ const signup = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-
     //Decoding data with secrate key
     const decoded = jwt.verify(token, JWT_SECRET);
 
     //This includes _id, email, role
     console.log("Decoded data:", decoded);
-
 
     //saving new token to user
     user.token = token;
