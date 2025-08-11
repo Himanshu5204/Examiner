@@ -21,14 +21,12 @@ const exam = new mongoose.Schema({
         type: String,
         require: true,
         trim: true,
-        minlength: 8
     },
 
-    code: {
+    dept_code: {
         type: String,
         require: true,
-        trim: true,
-        minlength: 8
+        trim: true
     },
 
     live: {
@@ -45,6 +43,7 @@ const exam = new mongoose.Schema({
         type: Date,
         require: true
     },
+
 }, { timestamps: true });
 
 const Exam = mongoose.model("Exam", exam);

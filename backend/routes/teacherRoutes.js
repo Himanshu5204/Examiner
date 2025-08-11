@@ -6,14 +6,20 @@ TEACHER API:
 const express = require('express');
 const router = express.Router();
 const StudentList = require('../models/studentList');
+const saveExam = require('../controller/saveExam');
 // const Course = require('../models/course');
 // const Dept = require('../models/dept');
 
+
+router.post('/exam', saveExam)
+
+
+
+//========================StudentList Upload=======================
 //Import packages for excel file upload
 const xlsx = require('xlsx');
 const fs = require('fs');
 const multer = require('multer');
-
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "upload/Teacher");
@@ -26,7 +32,6 @@ var storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 //(Important) upload file through Postman where key is 'xlsx' and value is excelfile
-
 //upload.single('xlsx') will store file into temporary storage
 router.post('/studentList', upload.single('xlsx'), async (req, res) => {
     try {

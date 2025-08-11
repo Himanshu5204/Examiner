@@ -13,9 +13,6 @@ const bcrypt = require('bcrypt');
 const createStudent = async (data) => {
     console.log("Student");
     const { student_id, name, email, password, contact, gender } = data;
-
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
-    const newStudent = new Student({ student_id, name, email, password: hashedPassword, contact });
     try {
 
         const validStudent = await StudentList.findOne({ student_id: student_id, email: email });
@@ -25,6 +22,9 @@ const createStudent = async (data) => {
             console.log("Not valid student");
             return { status: 204, user: null };
         }
+
+        // const newStudent = new Student({ student_id, name, email, password: hashedPassword, contact });
+        // const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
         //teacher found but already signedin
         if (validStudent.loggedin === true) {

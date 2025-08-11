@@ -7,7 +7,6 @@
 // 409 -> Resource already exist
 // 500 -> Internal server error
 
-
 /*
 * This file contains:
 * signup:
