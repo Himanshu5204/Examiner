@@ -6,6 +6,8 @@ import UpcomingExams from './Teacher/UpcomingExams';
 import CreateExamShortcut from './Teacher/CreateExamShortcut';
 import NoticeBoard from './Shared/NoticeBoard';
 import EventCalendar from './Shared/EventCalendar';
+import UploadStudentsShortcut from "./Teacher/UploadStudentsShortcut";
+//import UploadStudents from "./Teacher/UploadStudents";
 
 const TeacherDashboard = () => {
   return (
@@ -15,6 +17,8 @@ const TeacherDashboard = () => {
         <Topbar />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
           <CreateExamShortcut />
+          <UploadStudentsShortcut />
+          {/* <UploadStudents /> */}
           <UpcomingExams />
           <NoticeBoard />
         </div>

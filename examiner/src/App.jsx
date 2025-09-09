@@ -7,6 +7,7 @@ import Navbar from './pages/Navbar';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
+import UploadStudents from "./pages/Teacher/UploadStudents";
 import StudentDashboard from './pages/StudentDashboard';
 import { useAuth } from './pages/Context/AuthContext';
 import ExamPage from './pages/StudentExam/ExamPage';
@@ -14,6 +15,7 @@ import Spinner from './pages/Shared/Spinner';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
+// to checks wheather users has correct role to access route false then send to login
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? children : <Navigate to='/login' replace />;
@@ -77,7 +79,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/student/exam/:examId" element={<ExamPage />} />
+          <Route path="/teacher/UploadStudents" element={<UploadStudents />} />
+          <Route path='/student/exam/:examId' element={<ExamPage />} />
         </Routes>
       </Layout>
     </Router>
