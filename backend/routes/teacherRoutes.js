@@ -38,22 +38,36 @@ router.post('/studentList', upload.single('xlsx'), async (req, res) => {
         const sheet = workbook.Sheets[sheetName];
         const data = xlsx.utils.sheet_to_json(sheet);
 
-        await Promise.all(data.map(async (row) => {
+        let savedCount = 0;
+        let skippedRows = [];
+
+        for (const [index, row] of data.entries()) {
             if (!row.StudentId || !row.Email || !row.CourseCode || !row.DeptNo) {
-                throw new Error('Excel file missing required columns.');
+                skippedRows.push({ index: index + 2, reason: 'Missing required columns' }); // +2 for Excel row number
+                continue;
             }
-            const student = new StudentList({
-                student_id: row.StudentId,
-                email: row.Email,
-                course_id: row.CourseCode,
-                dept_code: row.DeptNo,
-            });
-            await student.save();
-        }));
+            try {
+                const student = new StudentList({
+                    student_id: row.StudentId,
+                    email: row.Email,
+                    course_id: row.CourseCode,
+                    dept_code: row.DeptNo,
+                });
+                await student.save();
+                savedCount++;
+            } catch (err) {
+                // Duplicate or validation error
+                skippedRows.push({ index: index + 2, reason: err.message });
+            }
+        }
 
         fs.unlinkSync(filePath);
 
-        res.status(200).json({ message: 'Student list uploaded successfully.' });
+        res.status(200).json({
+            message: 'Student list uploaded successfully.',
+            saved: savedCount,
+            skipped: skippedRows
+        });
     } catch (error) {
         console.error('StudentList Upload Error:', error);
         res.status(500).json({ message: error.message });
