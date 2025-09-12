@@ -6,6 +6,7 @@ import Signup from './pages/Signup';
 import Navbar from './pages/Navbar';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
+import UploadTeachers from "./pages/Admin/UploadTeachers";
 import TeacherDashboard from './pages/TeacherDashboard';
 import UploadStudents from "./pages/Teacher/UploadStudents";
 import StudentDashboard from './pages/StudentDashboard';
@@ -81,6 +82,7 @@ function App() {
           />
           <Route path="/teacher/UploadStudents" element={<UploadStudents />} />
           <Route path='/student/exam/:examId' element={<ExamPage />} />
+          <Route path="/admin/upload-teachers" element={<UploadTeachers />} />
         </Routes>
       </Layout>
     </Router>

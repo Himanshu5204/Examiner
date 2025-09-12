@@ -17,12 +17,12 @@ const fs = require('fs');
 const multer = require('multer');
 
 var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "upload/Admin");
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    },
+  destination: function (req, file, cb) {
+    cb(null, 'upload/Admin');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
 });
 
 const upload = multer({ storage: storage });
@@ -31,71 +31,133 @@ const upload = multer({ storage: storage });
 
 //upload.single('xlsx') will store file into temporary storage
 router.post('/teacherList', upload.single('xlsx'), async (req, res) => {
-    try {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded. Key must be "xlsx".' });
+    }
 
-        const filePath = req.file.path;
-        console.log(filePath + "<FILE_PATH>");
+    const filePath = req.file.path;
+    const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
 
-        const workbook = xlsx.readFile(filePath); //getting workbook
-        const sheetName = workbook.SheetNames[0]; //take first Sheet name
+    let savedCount = 0;
+    let skippedRows = [];
 
-        const sheet = workbook.Sheets[sheetName]; //take sheet from workbook
+    for (const [index, row] of data.entries()) {
+      const email = row['Email'];
+      const courseCode = row['CourseCode'];
+      const courseName = row['CourseName'];
+      const deptNo = row['DeptNo'];
+      const deptName = row['DeptName'];
+      const teacherId = row['TeacherId'];
 
-        const data = xlsx.utils.sheet_to_json(sheet); // excel -> JSON
+      // Check required columns
+      if (!email || !courseCode || !courseName || !deptNo || !deptName || !teacherId) {
+        skippedRows.push({ index: index + 2, reason: 'Missing required columns' });
+        continue;
+      }
 
-        //Printing into console or store it into DB
-        data.forEach(async (row, index) => {
-            const email = row['Email'];
-            const courseCode = row['CourseCode'];
-            const courseName = row['CourseNName'];
-            const deptNo = row['DeptNo'];
-            const deptName = row['DeptName'];
-            const teacherId = row['TeacherId'];
-
-            const teacher = new TeacherList({
-                teacher_id: teacherId,
-                email: email,
-                course_id: courseCode,
-                dept_code: deptNo,
-            });
-
-            const course = new Course({
-                course_id: courseCode,
-                name: courseName,
-                dept_code: deptNo,
-                teacher_id: teacherId
-            });
-
-            const dept = new Dept({
-                dept_code: deptNo,
-                name: deptName
-            });
-
-            await course.save();
-            await teacher.save();
-            await dept.save();
-
-        });
-
-        // this removes the temporary file
-        fs.unlinkSync(filePath);
-
-        res.status(200).json({ message: 'teacher list uploaded succesfully' });
-    } catch (error) {
-
-        /*
-        *  excel file must be include these columns:
-        *     - Email, CourseCode, CourseNName, DeptNo, DeptName
-        */
-        if (error.name === "ValidationError") {
-            console.error('TeacherLust_Format_Error: ', error);
-            res.status(400).json({ message: 'Error In Data' });
-            return;
+      try {
+        // Check for existing teacher
+        const existingTeacher = await TeacherList.findOne({ teacher_id: teacherId });
+        if (!existingTeacher) {
+          const teacher = new TeacherList({
+            teacher_id: teacherId,
+            email: email,
+            course_id: courseCode,
+            dept_code: deptNo
+          });
+          await teacher.save();
+        } else {
+          skippedRows.push({ index: index + 2, reason: 'Duplicate teacher' });
         }
 
-        console.error('Error_Upload_TeacherList: ', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        // Check for existing course
+        const existingCourse = await Course.findOne({ course_id: courseCode });
+        if (!existingCourse) {
+          const course = new Course({
+            course_id: courseCode,
+            name: courseName,
+            dept_code: deptNo,
+            teacher_id: teacherId
+          });
+          await course.save();
+        }
+
+        // Check for existing dept
+        const existingDept = await Dept.findOne({ dept_code: deptNo });
+        if (!existingDept) {
+          const dept = new Dept({
+            dept_code: deptNo,
+            name: deptName
+          });
+          await dept.save();
+        }
+
+        savedCount++;
+      } catch (err) {
+        skippedRows.push({ index: index + 2, reason: err.message });
+      }
     }
+    // remove temp file safely
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch (err) {
+      console.warn('File cleanup skipped:', err.message);
+    }
+
+    res.status(200).json({
+      message: 'Teacher list processed.',
+      saved: savedCount,
+      skipped: skippedRows
+    });
+  } catch (error) {
+    console.error('TeacherList Upload Error:', error);
+    res.status(500).json({ message: error.message });
+  }
 });
 
 module.exports = router;
+
+// const existingCourse = await Course.findOne({ course_id: courseCode });
+// if (!existingCourse) {
+//     const course = new Course({
+//         course_id: courseCode,
+//         name: courseName,
+//         dept_code: deptNo,
+//         teacher_id: teacherId
+//     });
+//     await course.save();
+// }else {
+//   skippedRows.push({ index: index + 2, reason: 'Duplicate teacher' });
+// }
+
+
+// const existingDept = await Dept.findOne({ dept_code: deptNo });
+// if (!existingDept) {
+//     const dept = new Dept({
+//         dept_code: deptNo,
+//         name: deptName
+//     });
+//     await dept.save();
+// }else {
+//   skippedRows.push({ index: index + 2, reason: 'Duplicate teacher' });
+// }
+
+
+// const existingTeacher = await TeacherList.findOne({ teacher_id: teacherId });
+// if (!existingTeacher) {
+//     const teacher = new TeacherList({
+//         teacher_id: teacherId,
+//         email: email,
+//         course_id: courseCode,
+//         dept_code: deptNo,
+//     });
+//     await teacher.save();
+// }else {
+//   skippedRows.push({ index: index + 2, reason: 'Duplicate teacher' });
+// }
