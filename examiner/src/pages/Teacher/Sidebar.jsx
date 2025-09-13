@@ -1,5 +1,5 @@
 // src/pages/Teacher/Sidebar.jsx
-import { BookOpen, Users, CalendarDays, LogOut } from 'lucide-react';
+import { BookOpen, Users,FileUp , CalendarDays, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React from 'react';
 import { useAuth } from '../Context/AuthContext';
@@ -24,6 +24,9 @@ const Sidebar = () => {
       <nav className="flex flex-col gap-4">
         <Link to="/teacher/dashboard" className="hover:text-blue-500 flex items-center gap-2">
           <BookOpen /> Dashboard
+        </Link>
+        <Link to="/teacher/uploadStudents" className="hover:text-blue-500 flex items-center gap-2">
+          <FileUp  /> Upload Students
         </Link>
         <Link to="/teacher/students" className="hover:text-blue-500 flex items-center gap-2">
           <Users /> My Students

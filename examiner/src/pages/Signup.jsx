@@ -134,6 +134,7 @@ const Signup = () => {
             className='form-control'
             id='password'
             name='password'
+            minLength={10}
             placeholder='Password'
             value={form.password}
             onChange={handleChange}
