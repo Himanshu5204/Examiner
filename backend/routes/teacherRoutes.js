@@ -5,6 +5,8 @@ const saveExam = require('../controller/saveExam');
 const xlsx = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+// const Exam = require("../models/Exam");
+// const StudentAnswer = require("../models/StudentAnswer");
 
 // Ensure upload folder exists
 const uploadDir = path.join(__dirname, '../upload/Teacher');
@@ -13,6 +15,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 const multer = require('multer');
+const { student } = require('../utils/getSchema');
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, uploadDir);
@@ -73,5 +76,11 @@ router.post('/studentList', upload.single('xlsx'), async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+router.get('/delete', async (req, res) => {
+    await StudentList.deleteMany();
+    await student.deleteMany();
+    res.status(200).json({ message: "deleted" })
+})
 
 module.exports = router;

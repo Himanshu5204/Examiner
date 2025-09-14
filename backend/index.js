@@ -23,6 +23,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/teacher', teacherRoutes);
 app.use('/api/student', studentRoutes);
 
+
 connectDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server Started http://localhost:${PORT}`);

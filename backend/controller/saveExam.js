@@ -11,7 +11,7 @@ const generateExamId = (length) => {
 }
 
 const saveExam = async (req, res) => {
-    let { teacher_id, course_id, dept_code, startTime, endTime } = req.body;
+    let { teacher_id, course_id, dept_code, startTime, endTime, questions } = req.body;
     try {
         const course = getSchema['course'];
         const isValid = await course.findOne({ teacher_id, course_id, dept_code });
@@ -27,7 +27,7 @@ const saveExam = async (req, res) => {
         endTime = new Date(endTime);
         const Exam = getSchema['exam'];
         const exam = new Exam({
-            exam_id, teacher_id, course_id, dept_code, live: false, startTime, endTime
+            exam_id, teacher_id, course_id, dept_code, live: false, startTime, endTime, questions
         });
 
         await exam.save();
@@ -38,6 +38,5 @@ const saveExam = async (req, res) => {
         res.status(500).json({ message: err });
     }
 };
-
 
 module.exports = saveExam;

@@ -56,6 +56,7 @@ function App() {
             }
           />
           <Route path='/profile' element={<Profile />} />
+          
           <Route
             path='/AdminDashboard'
             element={
@@ -64,6 +65,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path='/TeacherDashboard'
             element={
@@ -72,6 +74,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path='/StudentDashboard'
             element={
@@ -80,9 +83,11 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
           <Route path="/teacher/UploadStudents" element={<UploadStudents />} />
           <Route path='/student/exam/:examId' element={<ExamPage />} />
           <Route path="/admin/upload-teachers" element={<UploadTeachers />} />
+
         </Routes>
       </Layout>
     </Router>

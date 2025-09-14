@@ -5,4 +5,6 @@ module.exports = {
     "exam": require('../models/exam'),
     "student": require('../models/student'),
     "teacher": require('../models/teacher'),
+    "studentAnswer": require('../models/StudentAnswer'),
+    
 }

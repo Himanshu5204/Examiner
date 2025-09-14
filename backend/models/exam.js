@@ -44,6 +44,14 @@ const exam = new mongoose.Schema({
         require: true
     },
 
+    questions: [
+        {
+            questionText: String,
+            options: [String],
+            correctAnswer: String,
+        },
+    ],
+
 }, { timestamps: true });
 
 const Exam = mongoose.model("Exam", exam);

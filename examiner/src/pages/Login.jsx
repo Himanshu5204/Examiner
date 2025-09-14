@@ -52,7 +52,6 @@ const Login = () => {
           //don't take data.user.role
           const userRole = form.role;
 
-
           console.log('User role:', userRole);
           // Redirect based on user role
           if (userRole === 'admin') {
