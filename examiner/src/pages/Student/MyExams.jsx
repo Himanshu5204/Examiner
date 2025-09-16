@@ -1,36 +1,79 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 // src/pages/Student/MyExams.jsx
 const MyExams = () => {
-
+  const navigate = useNavigate();
   const [exams, setExams] = useState([]);
 
   let data = [];
-  const extractDate = (dateStr) => {
 
-  }
+  const formatIST = (utcString, withDate = false) => {
+    const date = new Date(utcString);
 
-  //format date and check status
-  const checkExamStatus = (dateStrStart, dateStrEnd) => {
-    // dateStrStart = "13/09 19:40"
-    // dateStrEnd = "13/09 20:10"
-    const [day, monthAndTime] = dateStrStart.split("/");  //   [13 , 09 19:40]
-    const [month, time] = monthAndTime.split(" "); // [09, 19:40]
-    const [hours, minutes] = time.split(":"); //  [ 19, 40]
+    return date.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: withDate ? "2-digit" : undefined,
+      month: withDate ? "2-digit" : undefined,
+      year: withDate ? "2-digit" : undefined,
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
 
+  const checkExamStatus = (startTime, endTime) => {
     const now = new Date();
-    const year = now.getFullYear();
+    const start = new Date(startTime);
+    const end = new Date(endTime);
 
-    const examDate = new Date(year, month - 1, day, hours, minutes);
-    let status = examDate > now ? "Upcoming" : "Completed";
+    let status = "";
+    if (now < start) {
+      status = "Upcoming";
+    } else if (now > end) {
+      status = "Completed";
+    } else {
+      status = "Running";
+    }
 
-    const [month2, time2] = dateStrEnd.split(" ");
-    const [hours2, minutes2] = time2.split(":");
-
-    const finalDate = day + "/" + month + "  " + hours + ":" + minutes + " to " + hours2 + ":" + minutes2;
-
+    const finalDate = `${formatIST(startTime, true)} To ${formatIST(endTime, false)}`;
     return [status, finalDate];
   };
+
+  //format date and check status
+  // const checkExamStatus = (dateStrStart, dateStrEnd) => {
+  //   // dateStrStart = "13/09 19:40"
+  //   // dateStrEnd = "13/09 21:10"
+
+  //   // --- Parse Start ---
+  //   const [dayStart, monthAndTimeStart] = dateStrStart.split("/");
+  //   const [monthStart, timeStart] = monthAndTimeStart.split(" ");
+  //   const [hoursStart, minutesStart] = timeStart.split(":");
+
+  //   // --- Parse End ---
+  //   const [dayEnd, monthAndTimeEnd] = dateStrEnd.split("/");
+  //   const [monthEnd, timeEnd] = monthAndTimeEnd.split(" ");
+  //   const [hoursEnd, minutesEnd] = timeEnd.split(":");
+
+  //   const year = new Date().getFullYear();
+
+  //   const start = new Date(year, monthStart - 1, dayStart, hoursStart, minutesStart);
+  //   const end = new Date(year, monthEnd - 1, dayEnd, hoursEnd, minutesEnd);
+
+  //   const now = new Date();
+
+  //   let status = "";
+  //   if (now < start) {
+  //     status = "Upcoming";
+  //   } else if (now > end) {
+  //     status = "Completed";
+  //   } else {
+  //     status = "Running"; // 👈 when current time is between start & end
+  //   }
+
+  //   const finalDate = `${dayStart}/${monthStart} ${hoursStart}:${minutesStart} to ${hoursEnd}:${minutesEnd}`;
+  //   return [status, finalDate];
+  // };
 
   const fetchRes = async () => {
     const res = await fetch('http://localhost:8000/api/student/exam', {
@@ -48,6 +91,7 @@ const MyExams = () => {
         Status: status,
         Course: serverData[i].Course,
         Date: date,
+        Id: serverData[i].Id
       })
       // console.log(data[i].Id);
     }
@@ -63,20 +107,38 @@ const MyExams = () => {
   return (
     <div className="bg-white p-4 rounded-2xl shadow">
       <h3 className="text-lg font-semibold mb-4">My Exams</h3>
-      <ul className="space-y-3">
-        {exams.map((exam, idx) => (
-          <li key={idx} className="flex justify-between border-b pb-2">
-            <div>
-              <span className="font-medium">{exam.Course}</span>
-              <p className="text-sm text-gray-500">{exam.Date}</p>
-              {/* <p className="text-sm text-gray-500">{exam.Teacher}</p> */}
-            </div>
-            <span className={`text-sm px-4 py-2 rounded-full ${exam.Status === 'Completed' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
-              {exam.Status}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <div className="h-[200px] overflow-y-auto scrollbar-none">
+        <ul className="space-y-3">
+          {exams.map((exam, idx) => (
+            <li key={idx} className="flex justify-between border-b pb-2">
+              <div>
+                <span className="font-medium">{exam.Course}</span>
+                <p className="text-sm text-gray-500">{exam.Date}</p>
+                {/* <p className="text-sm text-gray-500">{exam.Teacher}</p> */}
+              </div>
+
+              {
+                exam.Status === 'Running'
+                  ? (
+                    <div className="flex justify-center">
+                      <button
+                        className="btn btn-primary btn-sm mr-4"
+                        onClick={() => navigate(`/exam/${exam.Id}/instructions`)}
+                      >
+                        Start Exam
+                      </button>
+                    </div>
+                  )
+                  : (
+                    <span className={`text-sm px-4 py-2 rounded-full ${exam.Status === 'Completed' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
+                      {exam.Status}
+                    </span>
+                  )
+              }
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

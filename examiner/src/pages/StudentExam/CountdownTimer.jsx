@@ -1,23 +1,42 @@
 // src/pages/StudentExam/CountdownTimer.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 const CountdownTimer = ({ durationInMinutes = 60, onTimeout }) => {
   const [timeLeft, setTimeLeft] = useState(durationInMinutes * 60);
 
   useEffect(() => {
-    if (timeLeft <= 0) {
-      onTimeout();
-      return;
+    // Check if an endTime is already stored
+    let storedEndTime = localStorage.getItem("examEndTime");
+
+    if (!storedEndTime) {
+      const endTime = Date.now() + durationInMinutes * 60 * 1000;
+      localStorage.setItem("examEndTime", endTime);
+      storedEndTime = endTime;
     }
 
-    const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
+    const updateTimer = () => {
+      const now = Date.now();
+      const diff = Math.floor((storedEndTime - now) / 1000);
+      if (diff <= 0) {
+        setTimeLeft(0);
+        localStorage.removeItem("examEndTime"); // clear when exam ends
+        onTimeout();
+      } else {
+        setTimeLeft(diff);
+      }
+    };
+
+    updateTimer(); // run immediately
+    const timer = setInterval(updateTimer, 1000);
+
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [durationInMinutes, onTimeout]);
 
   const formatTime = (sec) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    const hrs = Math.floor(sec / 3600);
+    const mins = Math.floor((sec % 3600) / 60);
+    const secs = sec % 60;
+    return `${hrs}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
   return (

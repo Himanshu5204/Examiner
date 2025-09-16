@@ -13,6 +13,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import { useAuth } from './pages/Context/AuthContext';
 import ExamPage from './pages/StudentExam/ExamPage';
 import Spinner from './pages/Shared/Spinner';
+import ExamInstructions from './pages/StudentExam/ExamInstructions';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -56,7 +57,7 @@ function App() {
             }
           />
           <Route path='/profile' element={<Profile />} />
-          
+
           <Route
             path='/AdminDashboard'
             element={
@@ -83,10 +84,11 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+
           <Route path="/teacher/UploadStudents" element={<UploadStudents />} />
-          <Route path='/student/exam/:examId' element={<ExamPage />} />
+          <Route path='/exam/:examId' element={<ExamPage />} />
           <Route path="/admin/upload-teachers" element={<UploadTeachers />} />
+          <Route path="/exam/:examId/instructions" element={<ExamInstructions />} />
 
         </Routes>
       </Layout>

@@ -23,8 +23,8 @@ const getExamSummery = async () => {
         Id: e.exam_id,
         Course: e.course_id,
         Teacher: e.teacher_id,
-        Start: formatDateTime(e.startTime),
-        End: formatDateTime(e.endTime)
+        Start: e.startTime,
+        End: e.endTime
     }));
 
     // const teacherData = await teacher.find({ teacher_id }, { name: 1 });
