@@ -1,6 +1,11 @@
 // src/pages/StudentExam/SubmitConfirmation.jsx
 const SubmitConfirmation = ({ answers, total, onConfirm, onCancel }) => {
-  const answeredCount = Object.keys(answers).length;
+  // const answeredCount = Object.keys(answers).length - 1;
+  let answeredCount = 0;
+  console.log(answers)
+  for (let i = 1; i <= total; i++) {
+    if (answers[i] !== '') answeredCount++;
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

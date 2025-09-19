@@ -13,7 +13,7 @@ const ExamInstructions = () => {
             const data = await res.json();
             const durationInMin = data.duration;
             setDurationInMinutes(durationInMin);
-
+            console.log(data, "<ExamInstruction>")
             const hrs = (Math.floor(durationInMin / 60));
             const mins = (durationInMin % 60);
 
@@ -27,6 +27,8 @@ const ExamInstructions = () => {
 
             // data should contain exam details (Course, Instructor, Start, End)
             setExam(data);
+            const arr = new Array(parseInt(data.questionLength) + 1).fill("");
+            localStorage.setItem("answers", JSON.stringify(arr));
             // console.log(dur);
         };
 

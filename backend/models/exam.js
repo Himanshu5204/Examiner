@@ -46,6 +46,7 @@ const exam = new mongoose.Schema({
 
     questions: [
         {
+            questionId: String,
             questionText: String,
             options: [String],
             correctAnswer: String,

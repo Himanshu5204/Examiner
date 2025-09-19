@@ -45,7 +45,20 @@ const student = new mongoose.Schema({
 
     token: {
         type: String
-    }
+    },
+
+    exams: [
+        {
+            exam_id: String,
+            exam_answers: [
+                {
+                    question_id: String,
+                    correct_answer: String,
+                    selected_answer: String
+                }
+            ]
+        }
+    ]
 
 }, { timestamps: true });
 

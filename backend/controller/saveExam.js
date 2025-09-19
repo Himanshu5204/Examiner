@@ -26,6 +26,10 @@ const saveExam = async (req, res) => {
         startTime = new Date(startTime);
         endTime = new Date(endTime);
         const Exam = getSchema['exam'];
+        questions = questions.map((ques, index) => {
+            return { ...ques, questionId: index + 1 }
+            // console.log(ques);
+        })
         const exam = new Exam({
             exam_id, teacher_id, course_id, dept_code, live: false, startTime, endTime, questions
         });

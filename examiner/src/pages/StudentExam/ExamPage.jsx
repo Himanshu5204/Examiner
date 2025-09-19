@@ -2,30 +2,67 @@ import { useEffect, useState } from 'react';
 import CountdownTimer from './CountdownTimer';
 import QuestionCard from './QuestionCard';
 import SubmitConfirmation from './SubmitConfirmation';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
 const ExamPage = () => {
   const { examId } = useParams();
   const location = useLocation();
+
   const examDetails = location.state?.exam;
+  const navigate = useNavigate();
   console.log(examDetails, "<<<<");
+  // const ansewrr = new Array(examDetails.questionLength + 1).fill("");
   const [questions, setQuestions] = useState([]);
+  // const [persistIndex, setPersistIndex] = useState();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
+  let [answers, setAnswers] = useState(new Array(examDetails.questionLength + 1).fill(""));
+  // let [ans, setAns] = useState();
   const [showSubmit, setShowSubmit] = useState(false);
 
   const getQuestionList = async () => {
     const res = await fetch(`http://localhost:8000/api/student/exam/${examId}`);
     const serverData = await res.json();
+
+    console.log("Server data: ", serverData);
+
     setQuestions(serverData); // use Questions array from backend
+    // console.log(questions)
+    // setPersistIndex(parseInt(serverData[0].questionId))
+
   };
 
   useEffect(() => {
     getQuestionList();
-  }, [examId]);
+    let existingAnswer = JSON.parse(localStorage.getItem('answers'));
+    setAnswers(existingAnswer);
+  }, []);
 
   const handleSelect = (option) => {
-    setAnswers({ ...answers, [currentIndex]: option });
+    // console.log(option);
+    let existingAnswer = JSON.parse(localStorage.getItem('answers'));
+    // console.log("=======")
+    // console.log(currentIndex, persistIndex, answers, existingAnswer);
+    // setAns(option)
+    // console.log("=======")
+    const queId = parseInt(questions[currentIndex].questionId);
+    // setPersistIndex(queId);
+
+    console.log("localStorage(old): ", existingAnswer);
+
+    let newAnswer = { queId: option };
+
+    existingAnswer[queId] = option;
+    setAnswers(existingAnswer);
+
+    localStorage.setItem('answers', JSON.stringify(existingAnswer));
+
+    console.log("localStorage(new): ", existingAnswer);
+
+    // setAnswers([persistIndex] = option);
+    // console.log(persistIndex, option);
+    // handleIncrementClick(persistIndex, option);
+
+    console.log("Answer array", answers);
   };
 
   const handleNext = () => {
@@ -41,8 +78,17 @@ const ExamPage = () => {
   };
 
   const handleFinalSubmit = () => {
-    console.log('Submitted answers:', answers);
-    alert('Exam submitted successfully!');
+    // console.log('Submitted answers:', answers);
+    // alert('Exam submitted successfully!');
+
+    let answeres = JSON.parse(localStorage.getItem('answer'));
+    console.log("Localstorage answer", answeres)
+    localStorage.removeItem('examEndTime');
+    localStorage.removeItem('answers');
+    setTimeout(() => {
+      navigate('/StudentDashboard', { state: { message: 'Welcome Student!' } });
+    }, 5000);
+
     // send answers to backend here
   };
 
@@ -56,7 +102,7 @@ const ExamPage = () => {
         {examDetails && (
           <CountdownTimer
             durationInMinutes={examDetails.duration}
-            onTimeout={handleSubmit}
+            onTimeout={handleFinalSubmit}
           />
         )}
       </div>
@@ -65,7 +111,7 @@ const ExamPage = () => {
       <QuestionCard
         question={questions[currentIndex]}
         index={currentIndex}
-        selectedOption={answers[currentIndex]}
+        selectedOption={answers[parseInt(questions[currentIndex].questionId)]}
         onSelectOption={handleSelect}
       />
 
@@ -102,7 +148,7 @@ const ExamPage = () => {
         <SubmitConfirmation
           answers={answers}
           total={questions.length}
-          onConfirm={handleFinalSubmit}
+          onConfirm={() => handleFinalSubmit()}
           onCancel={() => setShowSubmit(false)}
         />
       )}

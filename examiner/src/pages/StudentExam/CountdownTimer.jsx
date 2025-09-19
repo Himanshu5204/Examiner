@@ -1,7 +1,7 @@
 // src/pages/StudentExam/CountdownTimer.jsx
 import { useEffect, useState } from "react";
 
-const CountdownTimer = ({ durationInMinutes = 60, onTimeout }) => {
+const CountdownTimer = ({ durationInMinutes, onTimeout }) => {
   const [timeLeft, setTimeLeft] = useState(durationInMinutes * 60);
 
   useEffect(() => {

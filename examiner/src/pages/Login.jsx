@@ -5,8 +5,8 @@ import { useAuth } from './Context/AuthContext';
 const Login = () => {
   const [form, setForm] = useState({
     role: 'teacher', //default role
-    email: 'Jahan@gmail.com',
-    password: '@jahan'
+    email: 'ary@gmail.com',
+    password: '1234567890'
   });
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);

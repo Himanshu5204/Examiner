@@ -8,10 +8,13 @@ const getQuestionList = async (examId) => {
     // console.log(examData.questions);
     let ques = examData.questions;
     const formattedQues = ques.map(q => ({
+        questionId: q.questionId,
         questionText: q.questionText,
         options: q.options,
         correctAnswer: q.correctAnswer
     }));
+    formattedQues.sort(() => 0.5 - Math.random());
+    console.log(formattedQues);
     return formattedQues;
 };
 
