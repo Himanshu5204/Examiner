@@ -2,6 +2,7 @@ const getSchema = require('../utils/getSchema');
 const exam = getSchema['exam'];
 const course = getSchema['course'];
 const teacher = getSchema['teacher'];
+const Student = getSchema['student'];
 
 const formatDateTime = (date) => {
     const d = new Date(date);
@@ -13,18 +14,22 @@ const formatDateTime = (date) => {
     return `${day}/${month} ${hours}:${minutes}`;
 };
 
-
-const getExamSummery = async () => {
+const getExamSummery = async (userId) => {
     const exams = await exam.find({}, { exam_id: 1, course_id: 1, teacher_id: 1, live: 1, startTime: 1, endTime: 1, _id: 0 });
-
+    const student = await Student.findOne({ student_id: userId });
     // console.log(exams);
+    const userSubmittedExams = student.exams;
+    console.log(userSubmittedExams, "<Already Submitted>");
+    const Ids = userSubmittedExams.map((v, i) => v.exam_id)
+    console.log(Ids, "<IDS>");
 
     const formattedExams = exams.map(e => ({
         Id: e.exam_id,
         Course: e.course_id,
         Teacher: e.teacher_id,
         Start: e.startTime,
-        End: e.endTime
+        End: e.endTime,
+        Submitted: userSubmittedExams.some(exam => exam.exam_id === e.exam_id)
     }));
 
     // const teacherData = await teacher.find({ teacher_id }, { name: 1 });

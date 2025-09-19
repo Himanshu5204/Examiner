@@ -11,13 +11,13 @@ const submitExam = async (student_id, exam_id, data) => {
 
     // check if exam is already submitted
     const alreadySubmitted = student.exams.some(e => e.exam_id === exam_id);
-    if (alreadySubmitted) {
-        throw new Error("Exam already submitted");
-    }
+    // if (alreadySubmitted) {
+    //     return "Exam already submitted";
+    // }
 
     const exam = await Exam.findOne({ exam_id }, { questions: 1, _id: 0 });
     if (!exam) {
-        throw new Error("Exam not found");
+        return "Exam not found";
     }
 
     const questions = exam.questions.map((val, ind) => {
@@ -42,9 +42,12 @@ const submitExam = async (student_id, exam_id, data) => {
         answers[ID] = questions[i].correctAnswer;
     }
 
+    console.log(answers);
+    console.log(userAnswer);
+
     let result = [];
     let score = 0;
-    for (let i = 0; i < n; i++) {
+    for (let i = 1; i <= n; i++) {
         const ID = userAnswer[i].questionId;
         if (userAnswer[i].selectedAnswer == answers[parseInt(ID)]) {
             score++;
@@ -60,7 +63,8 @@ const submitExam = async (student_id, exam_id, data) => {
     console.log("your score is:" + score);
     result = {
         exam_id,
-        exam_answers: result
+        exam_answers: result,
+        score: score
     }
 
     console.log(result);
@@ -68,6 +72,7 @@ const submitExam = async (student_id, exam_id, data) => {
     await student.save();
 
     console.log(student, "<<");
+    return "Done";
 }
 
 module.exports = submitExam;

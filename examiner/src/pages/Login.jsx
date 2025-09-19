@@ -4,10 +4,11 @@ import { useAuth } from './Context/AuthContext';
 
 const Login = () => {
   const [form, setForm] = useState({
-    role: 'teacher', //default role
-    email: 'ary@gmail.com',
+    role: 'student', //default role
+    email: 'ary0@gmail.com',
     password: '1234567890'
   });
+
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const location = useLocation();

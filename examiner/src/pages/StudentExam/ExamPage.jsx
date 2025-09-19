@@ -3,10 +3,12 @@ import CountdownTimer from './CountdownTimer';
 import QuestionCard from './QuestionCard';
 import SubmitConfirmation from './SubmitConfirmation';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from './../Context/AuthContext';
 
 const ExamPage = () => {
   const { examId } = useParams();
   const location = useLocation();
+  const { user } = useAuth();
 
   const examDetails = location.state?.exam;
   const navigate = useNavigate();
@@ -77,17 +79,37 @@ const ExamPage = () => {
     setShowSubmit(true);
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     // console.log('Submitted answers:', answers);
     // alert('Exam submitted successfully!');
 
     let answeres = JSON.parse(localStorage.getItem('answer'));
     console.log("Localstorage answer", answeres)
-    localStorage.removeItem('examEndTime');
-    localStorage.removeItem('answers');
-    setTimeout(() => {
+    let userAnswers = answers.map((val, index) => {
+      return {
+        question_id: `${index}`,
+        selected_answer: `${val}`
+      }
+    })
+
+    const data = {
+      student_id: user.student_id,
+      data: userAnswers
+    }
+    console.log(data);
+    const res = await fetch(`http://localhost:8000/api/student/exam/${examId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const response = await res.json();
+    if (response.message == 'Done') {
+      localStorage.removeItem('examEndTime');
+      localStorage.removeItem('answers');
       navigate('/StudentDashboard', { state: { message: 'Welcome Student!' } });
-    }, 5000);
+    } else {
+      alert(response.message);
+    }
 
     // send answers to backend here
   };

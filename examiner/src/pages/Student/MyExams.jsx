@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from './../Context/AuthContext';
 // src/pages/Student/MyExams.jsx
 const MyExams = () => {
   const navigate = useNavigate();
   const [exams, setExams] = useState([]);
+  const { user } = useAuth();
 
   let data = [];
 
@@ -31,7 +32,7 @@ const MyExams = () => {
     if (now < start) {
       status = "Upcoming";
     } else if (now > end) {
-      status = "Completed";
+      status = "Absent";
     } else {
       status = "Running";
     }
@@ -76,14 +77,14 @@ const MyExams = () => {
   // };
 
   const fetchRes = async () => {
-    const res = await fetch('http://localhost:8000/api/student/exam', {
+    const res = await fetch(`http://localhost:8000/api/student/user-exam/${user.student_id}`, {
       method: 'GET',
     });
 
     const serverData = await res.json();
 
     // setMessage(data.message);
-    console.log('dataa', data);
+    console.log('dataa', serverData);
 
     for (let i = 0; i < serverData.length; i++) {
       const [status, date] = checkExamStatus(serverData[i].Start, serverData[i].End);
@@ -91,7 +92,8 @@ const MyExams = () => {
         Status: status,
         Course: serverData[i].Course,
         Date: date,
-        Id: serverData[i].Id
+        Id: serverData[i].Id,
+        Submitted: serverData[i].Submitted
       })
       // console.log(data[i].Id);
     }
@@ -118,21 +120,30 @@ const MyExams = () => {
               </div>
 
               {
-                exam.Status === 'Running'
+                exam.Submitted === true
                   ? (
-                    <div className="flex justify-center">
-                      <button
-                        className="btn btn-primary btn-sm mr-4"
-                        onClick={() => navigate(`/exam/${exam.Id}/instructions`)}
-                      >
-                        Start Exam
-                      </button>
-                    </div>
+                    <span className={`text-sm px-4 py-2 rounded-full bg-yellow-100 text-green-600'}`}>
+                      Submitted
+                    </span>
                   )
                   : (
-                    <span className={`text-sm px-4 py-2 rounded-full ${exam.Status === 'Completed' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
-                      {exam.Status}
-                    </span>
+                    exam.Status === 'Running'
+                      ? (
+                        <div className="flex justify-center">
+
+                          <button
+                            className="btn btn-primary btn-sm mr-4"
+                            onClick={() => navigate(`/exam/${exam.Id}/instructions`)}
+                          >
+                            Start Exam
+                          </button>
+                        </div>
+                      )
+                      : (
+                        <span className={`text-sm px-4 py-2 rounded-full ${exam.Status !== 'Upcoming' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                          {exam.Status}
+                        </span>
+                      )
                   )
               }
             </li>

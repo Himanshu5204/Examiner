@@ -56,7 +56,8 @@ const student = new mongoose.Schema({
                     correct_answer: String,
                     selected_answer: String
                 }
-            ]
+            ],
+            score: String
         }
     ]
 
