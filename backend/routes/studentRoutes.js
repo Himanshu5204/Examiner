@@ -9,7 +9,8 @@ const getExamSummery = require('../controller/getExamSummery');
 const getExamDeatils = require('../controller/getExamDeatils');
 const getQuestionList = require('../controller/getQuestionList');
 const submitExam = require('../controller/submitExam');
-const getResults = require('../controller/getResults');
+const getAllResults = require('../controller/getAllResults');
+const getResult = require('../controller/getResult');
 
 //get-exam summery
 router.get('/user-exam/:userId', async (req, res) => {
@@ -66,13 +67,28 @@ router.get('/result/:studentId', async (req, res) => {
     try {
         const studentId = req.params.studentId;
 
-        const result = await getResults(studentId);
+        const result = await getAllResults(studentId);
 
         console.log(result)
 
         res.status(200).json(result);
     } catch (error) {
         console.error('TeacherList Upload Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+})
+
+router.post('/result', async (req, res) => {
+    try {
+        const { studentId, examId } = req.body;
+
+        const result = await getResult(studentId, examId);
+
+        console.log(result)
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('getResult Error:', error);
         res.status(500).json({ message: error.message });
     }
 })

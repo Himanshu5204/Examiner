@@ -15,8 +15,8 @@ const formatDateTime = (date) => {
     return `${day}/${month}/${year}`;
 };
 
-const getResults = async (studentId) => {
-    const studentDetails = await StudentList.findOne({ student_id: studentId }, { _id: 0 });
+const getAllResults = async (studentId) => {
+    // const studentDetails = await StudentList.findOne({ student_id: studentId }, { _id: 0 });
     // console.log(studentDetails);
 
     const exams = await Exam.find({});
@@ -30,6 +30,7 @@ const getResults = async (studentId) => {
         const studentExam = studentExams.find((ex) => ex.exam_id === val.exam_id);
 
         return {
+            Id: val.exam_id,
             Name: val.course_id,
             ExamDate: formatDateTime(val.startTime),
             Score: studentExam ? studentExam.score : "Absent",
@@ -40,4 +41,4 @@ const getResults = async (studentId) => {
     return result;
 }
 
-module.exports = getResults;
+module.exports = getAllResults;
