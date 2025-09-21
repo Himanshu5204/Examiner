@@ -15,8 +15,13 @@ const authentication = require('./routes/authentication');
 const PORT = process.env.PORT || 80;
 const app = express();
 app.use(express.json());
-app.use(cors());
 
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", 'Authorization'],
+    exposedHeaders: ["Content-Disposition"]
+}));
 //ROUTES
 app.use('/api/auth', authentication); //all user authentication
 app.use('/api/admin', adminRoutes);

@@ -1,19 +1,21 @@
 import { useEffect, useState, } from 'react';
-import { useAuth } from './../Context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // src/pages/Student/ExamResults.jsx
-const ExamResults = () => {
+const ExamResultsAll = () => {
   const { user } = useAuth();
-  const [result, setResult] = useState([]);
+  // const [result, setResult] = useState([]);
+  const location = useLocation();
+  const result = location.state?.result;
   const navigate = useNavigate();
 
-  const getResult = async () => {
-    const res = await fetch(`http://localhost:8000/api/student/result/${user.student_id}`);
-    const serverData = await res.json();
-    console.log(serverData);
-    setResult(serverData);
-  }
+  // const getResult = async () => {
+  //   const res = await fetch(`http://localhost:8000/api/student/result/${user.student_id}`);
+  //   const serverData = await res.json();
+  //   console.log(serverData);
+  //   setResult(serverData);
+  // }
 
   const downloadResult = async (examId) => {
 
@@ -59,7 +61,7 @@ const ExamResults = () => {
   }
 
   useEffect(() => {
-    getResult();
+    // getResult();
   }, []);
 
   return (
@@ -75,7 +77,7 @@ const ExamResults = () => {
           </tr>
         </thead>
         <tbody>
-          {result.slice(0, 3).map((r, idx) => (
+          {result.map((r, idx) => (
 
             <tr key={idx} className="border-b hover:bg-gray-50">
               <td className="py-2 text-center">{r.Name} </td>
@@ -104,22 +106,11 @@ const ExamResults = () => {
               </td>
             </tr>
           ))}
-
-          {result.length > 3 && (
-            <div className="mt-4 text-center">
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() => navigate("/results", { state: { result } })}
-              >
-                More
-              </button>
-            </div>
-          )}
-
         </tbody>
       </table>
+
     </div>
   );
 };
 
-export default ExamResults;
+export default ExamResultsAll;

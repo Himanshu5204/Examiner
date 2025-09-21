@@ -1,6 +1,6 @@
 const getSchema = require('../utils/getSchema');
 const exam = getSchema['exam'];
-const course = getSchema['course'];
+const Course = getSchema['course'];
 const teacher = getSchema['teacher'];
 const Student = getSchema['student'];
 
@@ -15,9 +15,10 @@ const formatDateTime = (date) => {
 };
 
 const getExamSummery = async (userId) => {
-    const exams = await exam.find({}, { exam_id: 1, course_id: 1, teacher_id: 1, live: 1, startTime: 1, endTime: 1, _id: 0 });
+    const exams = await exam.find({}, { exam_id: 1, course_id: 1, teacher_id: 1, live: 1, startTime: 1, endTime: 1, _id: 0 }).sort({ startTime: -1 });
     const student = await Student.findOne({ student_id: userId });
     // console.log(exams);
+
     const userSubmittedExams = student.exams;
     console.log(userSubmittedExams, "<Already Submitted>");
     const Ids = userSubmittedExams.map((v, i) => v.exam_id)

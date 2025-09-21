@@ -3,9 +3,14 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './Context/AuthContext';
 
 const Login = () => {
+  // const [form, setForm] = useState({
+  //   role: 'student', //default role
+  //   email: 'ary0@gmail.com',
+  //   password: '1234567890'
+  // });
   const [form, setForm] = useState({
-    role: 'student', //default role
-    email: 'ary0@gmail.com',
+    role: 'teacher', //default role
+    email: 'ary@gmail.com',
     password: '1234567890'
   });
 

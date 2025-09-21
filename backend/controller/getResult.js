@@ -3,6 +3,7 @@ const getSchema = require('../utils/getSchema');
 const Student = getSchema['student'];
 const StudentList = getSchema['studentList'];
 const Exam = getSchema['exam'];
+const Dept = getSchema['dept'];
 
 const formatDateTime = (date) => {
     const d = new Date(date);
@@ -48,7 +49,17 @@ const getResult = async (studentId, examId) => {
         }
     })
 
-    return { result: result, score: score };
+    const pdfData = {
+        name: student.name,
+        email: student.email,
+        courseId: exams.course_id,
+        dept: (await Dept.findOne({ dept_code: exams.dept_code })).name,
+        date: formatDateTime(exams.startTime)
+    }
+    // console.log(pdfData);
+    // console.log(formatDateTime(dateOfExam));
+
+    return { result: result, score: score, pdfData };
 }
 
 module.exports = getResult;

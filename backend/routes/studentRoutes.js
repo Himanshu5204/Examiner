@@ -5,12 +5,14 @@ STUDENT API:
 
 const express = require('express');
 const router = express.Router();
+const path = require('path');
 const getExamSummery = require('../controller/getExamSummery');
 const getExamDeatils = require('../controller/getExamDeatils');
 const getQuestionList = require('../controller/getQuestionList');
 const submitExam = require('../controller/submitExam');
 const getAllResults = require('../controller/getAllResults');
 const getResult = require('../controller/getResult');
+const generatePDF = require('../utils/generatePDF');
 
 //get-exam summery
 router.get('/user-exam/:userId', async (req, res) => {
@@ -83,10 +85,35 @@ router.post('/result', async (req, res) => {
         const { studentId, examId } = req.body;
 
         const result = await getResult(studentId, examId);
+        generatePDF(result)
+            .then((fileName) => {
 
-        console.log(result)
+                const filePath = path.join(__dirname, "../upload/results", fileName)
+                console.log("Sending file:", filePath, "as", fileName);
+                res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+                res.setHeader("Content-Type", "application/pdf");
 
-        res.status(200).json(result);
+                // res.download(filePath, fileName, (err) => {
+                //     if (err) {
+                //         console.error('Error sending file:', err);
+                //         res.status(500).send('Error downloading file.');
+                //     }
+                // });
+                res.sendFile(filePath, (err) => {
+                    if (err) {
+                        console.error("Error sending file:", err);
+                        res.status(500).send("Error downloading file.");
+                    }
+                });
+
+            })
+            .catch((err) => {
+                console.error('getResult Error:', err);
+                res.status(500).json({ message: err.message });
+            });
+
+        // console.log(result)
+
     } catch (error) {
         console.error('getResult Error:', error);
         res.status(500).json({ message: error.message });

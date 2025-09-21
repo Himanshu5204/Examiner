@@ -5,6 +5,8 @@ const saveExam = require('../controller/saveExam');
 const xlsx = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+const getStudentStatus = require('../controller/Teacher/getStudentStatus');
+
 // const Exam = require("../models/Exam");
 // const StudentAnswer = require("../models/StudentAnswer");
 
@@ -25,8 +27,6 @@ var storage = multer.diskStorage({
     },
 });
 const upload = multer({ storage: storage });
-
-router.post('/exam', saveExam);
 
 // StudentList Upload
 router.post('/studentList', upload.single('xlsx'), async (req, res) => {
@@ -77,10 +77,17 @@ router.post('/studentList', upload.single('xlsx'), async (req, res) => {
     }
 });
 
+
+router.post('/exam', saveExam);
+
+router.get('/studentsStatus', getStudentStatus);
+
 router.get('/delete', async (req, res) => {
     await StudentList.deleteMany();
     await student.deleteMany();
     res.status(200).json({ message: "deleted" })
 })
+
+
 
 module.exports = router;

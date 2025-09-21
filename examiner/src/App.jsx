@@ -14,6 +14,8 @@ import { useAuth } from './pages/Context/AuthContext';
 import ExamPage from './pages/StudentExam/ExamPage';
 import Spinner from './pages/Shared/Spinner';
 import ExamInstructions from './pages/StudentExam/ExamInstructions';
+import ExamResultsAll from './pages/Student/ExamResultsAll';
+import StudentList from './pages/Teacher/StudentList';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -56,6 +58,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route path='/profile' element={<Profile />} />
 
           <Route
@@ -85,10 +88,15 @@ function App() {
             }
           />
 
-          <Route path="/teacher/UploadStudents" element={<UploadStudents />} />
+          {/* students */}
           <Route path='/exam/:examId' element={<ExamPage />} />
           <Route path="/admin/upload-teachers" element={<UploadTeachers />} />
           <Route path="/exam/:examId/instructions" element={<ExamInstructions />} />
+          <Route path="/results" element={<ExamResultsAll />} />
+
+          {/* teacher */}
+          <Route path="/teacher/UploadStudents" element={<UploadStudents />} />
+          <Route path="/students" element={<StudentList />} />
 
         </Routes>
       </Layout>
