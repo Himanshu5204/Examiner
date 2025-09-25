@@ -52,7 +52,7 @@ const MyStudents = () => {
           <div className="mt-4 flex justify-center">
             <button
               className="btn btn-outline btn-sm"
-              onClick={() => navigate("/students", { state: { students } })}
+              onClick={() => navigate("/teacher/students", { state: { students } })}
             >
               More
             </button>

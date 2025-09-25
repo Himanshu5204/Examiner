@@ -18,6 +18,7 @@ if (!fs.existsSync(uploadDir)) {
 
 const multer = require('multer');
 const { student } = require('../utils/getSchema');
+const getExams = require('../controller/Teacher/getExams');
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, uploadDir);
@@ -79,10 +80,22 @@ router.post('/studentList', upload.single('xlsx'), async (req, res) => {
 
 
 router.post('/exam', saveExam);
+router.get('/exams/:teacherId', async (req, res) => {
+    try {
+        const teacher_id = req.params.teacherId;
+        const exams = await getExams(teacher_id);
+        if (exams == 0) {
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+        return res.status(200).json(exams);
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 router.get('/studentsStatus', getStudentStatus);
 
-router.get('/delete', async (req, res) => {
+router.get('/deleteStudentList', async (req, res) => {
     await StudentList.deleteMany();
     await student.deleteMany();
     res.status(200).json({ message: "deleted" })

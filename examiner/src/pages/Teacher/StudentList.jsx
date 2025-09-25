@@ -1,10 +1,26 @@
-import React from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const StudentList = () => {
     const location = useLocation();
-    const students = location.state?.students;
-    const navigate = useNavigate();
+    const [students, setStudents] = useState(location.state?.students || []);
+
+    const getStudent = async () => {
+        try {
+            const res = await fetch("http://localhost:8000/api/teacher/studentsStatus");
+            const studentData = await res.json();
+            setStudents(studentData);
+        } catch (error) {
+            console.error("Error fetching students:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (students.length === 0) {
+            getStudent();
+        }
+    }, []); // run once
+
     return (
         <div className="bg-white p-4 rounded-2xl shadow">
             <button

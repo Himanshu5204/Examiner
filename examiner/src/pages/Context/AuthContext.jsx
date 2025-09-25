@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext();
 
+const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
             const userData = data.user;
             setUser(userData);
             setUser({ ...userData, role:data.role });
-            console.log(userData, "<<<<<");
+            // console.log(userData, "<<<<<");
             // console.log(user, "<<<<<");
           } else {
             console.log("data and user not found");
@@ -98,6 +98,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+
     setUser(null);
   };
 
