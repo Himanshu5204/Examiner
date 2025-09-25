@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../Context/AuthContext";
 
-// src/pages/Teacher/UpcomingExams.jsx
-const UpcomingExams = () => {
-  const navigate = useNavigate();
-  const [exams, setExams] = useState([]);
+// src/pages/Teacher/MyStudents.jsx
+const MyExams = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [exam, setExam] = useState(location.state?.exams || null);
 
   const formatIST = (utcString, withDate = false) => {
     const date = new Date(utcString);
@@ -60,55 +61,62 @@ const UpcomingExams = () => {
       })
     }
     console.log('dataa', data);
-    setExams(data);
+    setExam(data);
   }
 
   useEffect(() => {
-    getExams();
+    if (!exam) {
+      getExams();
+    }
   }, []);
+
+  if (!exam) {
+    return <>
+      <div>No Exam Found</div>
+    </>;
+  }
 
   return (
     <div className="bg-white p-4 rounded-2xl shadow">
-      <h3 className="text-lg font-semibold mb-4">Upcoming Exams</h3>
+      <h3 className="text-lg font-semibold mb-4">Exams</h3>
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-gray-500 border-b">
+          <tr className="text-center text-gray-500 border-b">
             <th>Name</th>
             <th>Date</th>
-            <th>Exam Id</th>
+            <th>Id</th>
+            <th>Status</th>
           </tr>
         </thead>
-        <tbody>
 
+        <tbody>
           {
-            exams
-              .filter(exam => exam.Status == "Past")
-              .slice(0, 3)
-              .map((exam, idx) => (
-                <tr key={idx} className="border-b hover:bg-gray-50">
-                  <td className="py-2">{exam.Name}</td>
-                  <td>{exam.Date}</td>
-                  <td>{exam.ExamId}</td>
-                </tr>
-              ))}
+            exam.map((exam, idx) => (
+
+              <tr key={idx} className="border-b hover:bg-gray-50">
+                <td className="py-2 text-center">{exam.Name} </td>
+                <td className="py-2 text-center">{exam.Date}</td>
+                <td className="py-2 text-center">{exam.ExamId}</td>
+                <td
+                  className={`py-2 text-center font-semibold
+                    ${exam.Status === "Past" ? "text-red-500" : ""}
+                    ${exam.Status === "Upcoming" ? "text-blue-500" : ""}
+                    ${exam.Status === "Running" ? "text-green-500" : ""}
+                  `}
+                >
+                  {
+                    exam.Status
+                  }
+                </td>
+              </tr>
+
+            ))}
 
         </tbody>
       </table>
 
-      {
-        exams.length > 0 && (
-          <div className="mt-4 flex justify-center">
-            <button
-              className="btn btn-outline btn-sm"
-              onClick={() => navigate("/teacher/exams", { state: { exams } })}
-            >
-              More
-            </button>
-          </div>
-        )
-      }
-    </div >
+    </div>
   );
 };
 
-export default UpcomingExams;
+export default MyExams;

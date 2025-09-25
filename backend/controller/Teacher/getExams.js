@@ -15,13 +15,13 @@ const formatDateTime = (date) => {
 const getExams = async (teacher_id) => {
     try {
         console.log(teacher_id)
-        const exams = await Exam.find({ teacher_id }, { exam_id: 1, startTime: 1, endTime: 1, course_id: 1 });
+        const exams = await Exam.find({ teacher_id }, { exam_id: 1, startTime: 1, endTime: 1, course_id: 1 }).sort({ startTime: -1 });
         console.log(exams)
         const Exams = exams.map((val, ind) => {
             return {
                 examId: val.exam_id,
-                Start: formatDateTime(val.startTime),
-                End: formatDateTime(val.endTime),
+                Start: val.startTime,
+                End: val.endTime,
                 name: val.course_id
             }
         })

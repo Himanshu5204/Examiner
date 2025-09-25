@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
           if (data && (data.user || data._id)) {
             const userData = data.user;
             setUser(userData);
-            setUser({ ...userData, role:data.role });
+            setUser({ ...userData, role: data.role });
             // console.log(userData, "<<<<<");
             // console.log(user, "<<<<<");
           } else {
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, login, logout, loading, setUser }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

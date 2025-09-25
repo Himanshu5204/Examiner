@@ -13,6 +13,7 @@ const submitExam = require('../controller/submitExam');
 const getAllResults = require('../controller/getAllResults');
 const getResult = require('../controller/getResult');
 const generatePDF = require('../utils/generatePDF');
+const getSchema = require('../utils/getSchema');
 
 //get-exam summery
 router.get('/user-exam/:userId', async (req, res) => {
@@ -117,6 +118,19 @@ router.post('/result', async (req, res) => {
     } catch (error) {
         console.error('getResult Error:', error);
         res.status(500).json({ message: error.message });
+    }
+})
+
+router.get('/get-dept/:Id', async (req, res) => {
+    try {
+        const Id = req.params.Id;
+        const stud = getSchema['studentList'];
+        const data = await stud.findOne({ student_id: Id });
+        console.log(data);
+        res.status(200).json({ dept: data.dept_code });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error_get-dept" });
     }
 })
 

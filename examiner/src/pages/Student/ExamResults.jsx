@@ -105,19 +105,19 @@ const ExamResults = () => {
             </tr>
           ))}
 
-          {result.length > 3 && (
-            <div className="mt-4 text-center">
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() => navigate("/results", { state: { result } })}
-              >
-                More
-              </button>
-            </div>
-          )}
 
         </tbody>
       </table>
+      {result.length > 3 && (
+        <div className="mt-4 text-center">
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={() => navigate("/results", { state: { result } })}
+          >
+            More
+          </button>
+        </div>
+      )}
     </div>
   );
 };

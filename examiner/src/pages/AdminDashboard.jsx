@@ -17,10 +17,13 @@ const AdminDashboard = () => {
           <GenderPieChart />
           <AttendanceChart />
         </div>
+
+        {/* 
         <div className="grid grid-cols-2 gap-6">
           <NoticeBoard />
           <EventCalendar />
-        </div>
+        </div> 
+        */}
       </main>
     </div>
   );

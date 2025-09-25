@@ -7,13 +7,22 @@ const Profile = () => {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [Id, setId] = useState();
   const [role, setRole] = useState();
+  const [dept, setDept] = useState();
   const navigate = useNavigate();
+  const getDept = async () => {
+    const data = await fetch(`http://localhost:8000/api/student/get-dept/${user.student_id}`);
+    const dataJson = await data.json();
+    setDept(dataJson.dept);
+    console.log(dataJson.dept);
+  }
   useEffect(() => {
     if (user.teacher_id !== undefined) {
       setId(user.teacher_id);
       setRole("Teacher")
     } else if (user.student_id !== undefined) {
+
       setId(user.student_id);
+      getDept();
       setRole("Student")
     } else if (user.admin_id !== undefined) {
       setId(user.admin_id);
@@ -31,6 +40,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-lg w-full max-w-md overflow-hidden">
+
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-6 flex flex-col items-center">
           <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center text-4xl font-bold text-blue-500">
@@ -49,15 +59,28 @@ const Profile = () => {
               &nbsp;
               <span className="text-gray-500">({Id})</span>
             </span>
+          </div>
 
-          </div>
-          <div className="flex justify-between border-b pb-2">
-            <span className="text-gray-500 font-medium">Course:</span>
-            <span className="font-semibold">{user.course_id}</span>
-          </div>
+          {
+            user.teacher_id !== undefined
+              ? (
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-gray-500 font-medium">Course:</span>
+                  <span className="font-semibold">{user.course_id}</span>
+                </div>
+              )
+              : (null)
+          }
+
           <div className="flex justify-between border-b pb-2">
             <span className="text-gray-500 font-medium">Department:</span>
-            <span className="font-semibold">{user.dept_code}</span>
+            <span className="font-semibold">
+              {
+                user.teacher_id !== undefined
+                  ? user.dept_code
+                  : dept
+              }
+            </span>
           </div>
 
           {/* Change Password */}

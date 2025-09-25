@@ -20,15 +20,15 @@ const TeacherDashboard = () => {
           <UploadStudentsShortcut />
           {/* <UploadStudents /> */}
           <UpcomingExams />
-          <NoticeBoard />
+          {/* <NoticeBoard /> */}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
           <MyStudents />
           <StudentPerformanceChart />
         </div>
-        <div className="p-4">
+        {/* <div className="p-4">
           <EventCalendar />
-        </div>
+        </div> */}
       </div>
     </div>
   );

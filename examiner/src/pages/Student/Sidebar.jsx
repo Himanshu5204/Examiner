@@ -30,7 +30,7 @@ const Sidebar = () => {
           <BookOpenCheck /> Dashboard
         </NavLink>
         <NavLink
-          to="/student/results"
+          to="/results"
           className={({ isActive }) =>
             `flex items-center gap-2 ${isActive ? 'text-green-600 font-semibold' : 'hover:text-green-500'}`
           }

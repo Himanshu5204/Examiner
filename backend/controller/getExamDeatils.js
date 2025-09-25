@@ -14,7 +14,7 @@ const formatDateTime = (date) => {
 };
 
 const getExamDeatils = async (exam_id) => {
-    const exams = await exam.findOne({ exam_id }, { course_id: 1, teacher_id: 1, live: 1, startTime: 1, endTime: 1, _id: 0, questions: 1 });
+    const exams = await exam.findOne({ exam_id }, { course_id: 1, teacher_id: 1, startTime: 1, endTime: 1, _id: 0, questions: 1 });
 
     // console.log(exams);
     const tId = exams.teacher_id, cId = exams.course_id;
