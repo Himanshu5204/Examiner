@@ -101,6 +101,8 @@ router.get('/deleteStudentList', async (req, res) => {
     res.status(200).json({ message: "deleted" })
 })
 
-
+router.get('/allResult', async (req, res) => {
+    res.status(200).json({ message: "OK" });
+})
 
 module.exports = router;

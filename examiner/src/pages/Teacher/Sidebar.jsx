@@ -1,5 +1,5 @@
 // src/pages/Teacher/Sidebar.jsx
-import { BookOpen, Users, FileUp, CalendarDays, LogOut } from 'lucide-react';
+import { BookOpen, Users, FileUp, CalendarDays, LogOut, ChartNoAxesColumn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React from 'react';
 import { useAuth } from '../Context/AuthContext';
@@ -34,7 +34,10 @@ const Sidebar = () => {
         <Link to="/teacher/exams" className="hover:text-blue-500 flex items-center gap-2">
           <CalendarDays /> Exams
         </Link>
-        <Link to="/login" className="text-red-500 flex items-center gap-2 mt-auto"> </Link>
+        <Link to="/teacher/analytics" className="hover:text-blue-500 flex items-center gap-2">
+          <ChartNoAxesColumn /> Analytics
+        </Link>
+        {/* <Link to="/login" className="text-red-500 flex items-center gap-2 mt-auto"> x </Link> */}
         <Link to="#" onClick={handleLogout} className="text-red-500 flex items-center gap-2 mt-auto">
           <LogOut /> Logout
         </Link>
