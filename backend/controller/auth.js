@@ -81,8 +81,6 @@ const login = async (req, res) => {
     //This includes _id, email, role
     console.log("Decoded data:", decoded);
 
-
-
     console.log("OLD: ", user.token);
     console.log('NEW:', token);
 

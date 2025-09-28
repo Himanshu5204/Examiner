@@ -22,6 +22,7 @@ app.use(cors({
     allowedHeaders: ["Content-Type", 'Authorization'],
     exposedHeaders: ["Content-Disposition"]
 }));
+
 //ROUTES
 app.use('/api/auth', authentication); //all user authentication
 app.use('/api/admin', adminRoutes);

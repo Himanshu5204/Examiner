@@ -16,6 +16,10 @@ import Spinner from './pages/Shared/Spinner';
 import ExamInstructions from './pages/StudentExam/ExamInstructions';
 import ExamResultsAll from './pages/Student/ExamResultsAll';
 import StudentList from './pages/Teacher/StudentList';
+import SaveExam from './pages/Teacher/SaveExam';
+import MyExams from './pages/Teacher/MyExams';
+import Analytics from './pages/Teacher/Analytics';
+
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -31,7 +35,7 @@ const Layout = ({ children }) => {
   const hideNavbar = location.pathname === '/login' || location.pathname === '/signup';
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {/* {!hideNavbar && <Navbar />} */}
       {children}
     </>
   );
@@ -96,7 +100,10 @@ function App() {
 
           {/* teacher */}
           <Route path="/teacher/UploadStudents" element={<UploadStudents />} />
-          <Route path="/students" element={<StudentList />} />
+          <Route path="/teacher/students" element={<StudentList />} />
+          <Route path="/teacher/create-exam" element={<SaveExam />} />
+          <Route path="/teacher/exams" element={<MyExams />} />
+          <Route path="/teacher/analytics" element={<Analytics />} />
 
         </Routes>
       </Layout>

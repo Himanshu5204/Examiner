@@ -3,11 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 // src/pages/Teacher/MyStudents.jsx
 const MyStudents = () => {
-  // const students = [
-  //   { id: 1, name: 'Ankit Sharma', email: 'ankit@example.com', status: 'Active' },
-  //   { id: 2, name: 'Priya Mehta', email: 'priya@example.com', status: 'Inactive' },
-  //   { id: 3, name: 'Ravi Kumar', email: 'ravi@example.com', status: 'Active' },
-  // ];
+
   const [students, setStudents] = useState([]);
   const navigate = useNavigate();
   const getStudent = async () => {
@@ -52,7 +48,7 @@ const MyStudents = () => {
           <div className="mt-4 flex justify-center">
             <button
               className="btn btn-outline btn-sm"
-              onClick={() => navigate("/students", { state: { students } })}
+              onClick={() => navigate("/teacher/students", { state: { students } })}
             >
               More
             </button>

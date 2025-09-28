@@ -1,5 +1,5 @@
 // src/pages/Teacher/Sidebar.jsx
-import { BookOpen, Users,FileUp , CalendarDays, LogOut } from 'lucide-react';
+import { BookOpen, Users, FileUp, CalendarDays, LogOut, ChartNoAxesColumn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React from 'react';
 import { useAuth } from '../Context/AuthContext';
@@ -22,11 +22,11 @@ const Sidebar = () => {
     <div className="bg-white shadow-md h-screen p-4 flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-blue-600 mb-4">Teacher Panel</h1>
       <nav className="flex flex-col gap-4">
-        <Link to="/teacher/dashboard" className="hover:text-blue-500 flex items-center gap-2">
+        <Link to="/TeacherDashboard" className="hover:text-blue-500 flex items-center gap-2">
           <BookOpen /> Dashboard
         </Link>
         <Link to="/teacher/uploadStudents" className="hover:text-blue-500 flex items-center gap-2">
-          <FileUp  /> Upload Students
+          <FileUp /> Upload Students
         </Link>
         <Link to="/teacher/students" className="hover:text-blue-500 flex items-center gap-2">
           <Users /> My Students
@@ -34,7 +34,10 @@ const Sidebar = () => {
         <Link to="/teacher/exams" className="hover:text-blue-500 flex items-center gap-2">
           <CalendarDays /> Exams
         </Link>
-        <Link to="/login" className="text-red-500 flex items-center gap-2 mt-auto"> </Link>
+        <Link to="/teacher/analytics" className="hover:text-blue-500 flex items-center gap-2">
+          <ChartNoAxesColumn /> Analytics
+        </Link>
+        {/* <Link to="/login" className="text-red-500 flex items-center gap-2 mt-auto"> x </Link> */}
         <Link to="#" onClick={handleLogout} className="text-red-500 flex items-center gap-2 mt-auto">
           <LogOut /> Logout
         </Link>

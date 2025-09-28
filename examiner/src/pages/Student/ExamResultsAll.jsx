@@ -5,17 +5,17 @@ import { useNavigate, useLocation } from 'react-router-dom';
 // src/pages/Student/ExamResults.jsx
 const ExamResultsAll = () => {
   const { user } = useAuth();
-  // const [result, setResult] = useState([]);
   const location = useLocation();
-  const result = location.state?.result;
+  const [result, setResult] = useState(location.state?.result || null);
+  // const result = location.state?.result;
   const navigate = useNavigate();
 
-  // const getResult = async () => {
-  //   const res = await fetch(`http://localhost:8000/api/student/result/${user.student_id}`);
-  //   const serverData = await res.json();
-  //   console.log(serverData);
-  //   setResult(serverData);
-  // }
+  const getResult = async () => {
+    const res = await fetch(`http://localhost:8000/api/student/result/${user.student_id}`);
+    const serverData = await res.json();
+    console.log("<MyExams.getResult>", serverData);
+    setResult(serverData);
+  }
 
   const downloadResult = async (examId) => {
 
@@ -61,8 +61,17 @@ const ExamResultsAll = () => {
   }
 
   useEffect(() => {
-    // getResult();
+    console.log(result, "<");
+    if (!result) {
+      getResult();
+    }
   }, []);
+
+  if (!result) {
+    return <>
+      <div>No result</div>;
+    </>
+  }
 
   return (
     <div className="bg-white p-4 rounded-2xl shadow">

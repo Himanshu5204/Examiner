@@ -84,7 +84,7 @@ const MyExams = () => {
     const serverData = await res.json();
 
     // setMessage(data.message);
-    console.log('dataa', serverData);
+    // console.log('dataa', serverData);
 
     for (let i = 0; i < serverData.length; i++) {
       const [status, date] = checkExamStatus(serverData[i].Start, serverData[i].End);
@@ -97,9 +97,8 @@ const MyExams = () => {
       })
       // console.log(data[i].Id);
     }
-
     setExams(data);
-    console.log(data);
+    console.log(data, "<MyExams.fetchRes>");
   }
 
   useEffect(() => {

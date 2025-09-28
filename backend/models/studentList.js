@@ -23,6 +23,11 @@ const studentList = new mongoose.Schema(
             require: true,
             trim: true
         },
+        gender: {
+            type: String,
+            require: true,
+            trim: true,
+        },
         loggedin: {
             type: Boolean,
             default: false

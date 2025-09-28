@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext();
 
+const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }) => {
           if (data && (data.user || data._id)) {
             const userData = data.user;
             setUser(userData);
-            setUser({ ...userData, role:data.role });
-            console.log(userData, "<<<<<");
+            setUser({ ...userData, role: data.role });
+            // console.log(userData, "<<<<<");
             // console.log(user, "<<<<<");
           } else {
             console.log("data and user not found");
@@ -98,10 +98,11 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, login, logout, loading, setUser }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

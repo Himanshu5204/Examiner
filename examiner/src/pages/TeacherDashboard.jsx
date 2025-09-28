@@ -15,20 +15,20 @@ const TeacherDashboard = () => {
       <Sidebar />
       <div className="flex flex-col">
         <Topbar />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
           <CreateExamShortcut />
           <UploadStudentsShortcut />
           {/* <UploadStudents /> */}
-          <UpcomingExams />
-          <NoticeBoard />
+          {/* <NoticeBoard /> */}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+          <UpcomingExams />
           <MyStudents />
           <StudentPerformanceChart />
         </div>
-        <div className="p-4">
+        {/* <div className="p-4">
           <EventCalendar />
-        </div>
+        </div> */}
       </div>
     </div>
   );
