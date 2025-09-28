@@ -29,31 +29,54 @@ async function indexDocument() {
 
   //chunking - divided into small parts also do by loops
   const textSplitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1500, //1-1000 , 800-1800 , 1600-2600 for content not lost
+    chunkSize: 3000, //1-1000 , 800-1800 , 1600-2600 for content not lost
     chunkOverlap: 200
   });
   const chunkedDocs = await textSplitter.splitDocuments(rawDocs);
   console.log(chunkedDocs.length, 'chunks'); //227 chunks
   console.log('chunking completed');
 
+
   try {
     //data converts into Vector - Embedding model
     const embeddings = new GoogleGenerativeAIEmbeddings({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'embedding-001' // example: dimension 1024
+      model: 'text-embedding-004' // more reliable for Gemini API
     });
     console.log('Embedding model configured');
 
-    const vectors = await Promise.all(
-      chunkedDocs.map(async (doc) => {
-        const embedding = await embeddings.embedQuery(doc.pageContent);
-        if (embedding.length !== 1024) {
-          throw new Error(`Embedding dimension mismatch: got ${embedding.length}, expected 1024`);
-        }
-        return embedding;
-      })
-    );
+    // Prepare array of strings for embedding
+    const texts = chunkedDocs.map(doc => doc.pageContent);
+    if (texts.length > 100) {
+      throw new Error('PDF too large or too fragmented for free API quota.');
+    }
+    console.log('Texts to embed:', texts);
+    const vectors = await embeddings.embedDocuments(texts);
+    console.log('Embedding result:', vectors);
+
+    if (!vectors.length) {
+      throw new Error('No embeddings returned. Check input text and API quota.');
+    }
+    if (!vectors[0] || !Array.isArray(vectors[0])) {
+      throw new Error('Embedding API did not return a valid vector array.');
+    }
+    // Accept any non-empty vector length (for Gemini, 768 or 1536 or 1024 are possible)
+    if (vectors[0].length < 100) {
+      throw new Error(`Embedding dimension too small: got ${vectors[0].length}`);
+    }
     console.log('First embedding dimension:', vectors[0].length);
+
+    //Database configure connectivity - Pinecone for data store
+    const pinecone = new Pinecone();
+    const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME);
+    console.log('Pinecone index configured');
+
+    //langchain (chunking,embedding,database)
+    await PineconeStore.fromDocuments(chunkedDocs, embeddings, {
+      pineconeIndex,
+      maxConcurrency: 5 //5-5 store together
+    });
+    console.log('Data stored successfully');
   } catch (err) {
     if (err.status === 429) {
       console.error('Quota exceeded for Gemini API embeddings. Please upgrade your plan or wait for quota reset.');
@@ -63,17 +86,5 @@ async function indexDocument() {
       process.exit(1);
     }
   }
-  //Database configure connectivity - Pinecone for data store
-  const pinecone = new Pinecone();
-  const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME);
-  console.log('Pinecone index configured');
-
-  //langchain (chunking,embedding,database)
-  await PineconeStore.fromDocuments(chunkedDocs, embeddings, {
-    pineconeIndex,
-    maxConcurrency: 5 //5-5 store together
-  });
-  console.log('Data stored successfully');
 }
-
 indexDocument();

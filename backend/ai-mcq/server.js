@@ -1,48 +1,47 @@
-//Phase 2: Query Resolving phase
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
-import readlineSync from 'readline-sync';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { GoogleGenAI } from '@google/genai';
- 
+
 dotenv.config({ path: path.resolve('../.env') });
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); //{apikey:""} new changes {}
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const History = [];
 
-
+// 🔹 Function to generate MCQs
 async function generateMCQs(mcqCount) {
-  // Get the user's question (for MCQ generation, you can use a fixed prompt or ask the user)
-  const question = `Generate ${mcqCount} MCQs from the syllabus context`;
-
-  // Create embeddings instance
+  // Use the same embedding model and logic as index.js/query.js
   const embeddings = new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GEMINI_API_KEY,
     model: 'text-embedding-004'
   });
 
-  // Embed the question to get the correct 768-dim vector
-  const queryVector = await embeddings.embedQuery(question);
-
-  // Connect to Pinecone
+  // Pinecone setup
   const pinecone = new Pinecone();
   const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME);
 
-  // Query Pinecone with the embedded vector
+  // Use the actual MCQ prompt as the query
+  const question = `Generate ${mcqCount} MCQs from the syllabus context`;
+  const queryVector = await embeddings.embedQuery(question);
+
   const searchResults = await pineconeIndex.query({
     topK: 10,
     vector: queryVector,
     includeMetadata: true
   });
-  console.log('Search results fetched from Pinecone', searchResults);
-  console.log("Search Results:", searchResults.matches.length);
 
-  // Build context for LLM
-  const context = searchResults.matches
-    .map((match) => match.metadata.text)
-    .join('\n\n---\n\n');
+  const context = searchResults.matches.map((match) => match.metadata.text).join('\n\n---\n\n');
 
-  // Gemini model
   History.push({
     role: 'user',
     parts: [{ text: question }]
@@ -99,46 +98,35 @@ async function generateMCQs(mcqCount) {
     parts: [{ text: response.text }]
   });
 
-  console.log(response.text);
-}
-//2nd llm to make context meaning full like (1st que + ans + 2nd que)
-// async function transform(question) {
-//   History.push({
-//     role: 'user',
-//     parts: [{ text: question }]
-//   });
-
-//   const response = await ai.models.generateContent({
-//     model: 'gemini-2.0-flash',
-//     contents: History,
-//     config: {
-//       systemInstruction: `You are a query rewriting expert. Based on the provided chat history, rephrase the "Follow Up user Question"
-//        into a complete, standalone question that can be understood without the chat history.
-//     Only output the rewritten question and nothing else.
-//       `
-//     }
-//   });
-
-//   History.pop();
-
-//   return response.text;
-// }
-
-async function main() {
-  //const userProblem = readlineSync.question('Enter topic or question --> ');
-  const mcqCount = parseInt(readlineSync.question('How many MCQs to generate? --> '), 10);
-  //await generateMCQs(userProblem, mcqCount);
-  await generateMCQs(mcqCount);
-  main(); // loop again
+  return response.text;
 }
 
-main();
+// 🔹 API endpoint
+app.post('/generate-mcqs', async (req, res) => {
+  try {
+    const { count } = req.body; // Example: { "count": 5 }
+    const mcqCount = parseInt(count) || 5;
 
-//it assume as two different questions but actually related no history check ,
+    const result = await generateMCQs(mcqCount);
 
-//what is quick sort -->context:vector db answer
-//explain it in detail --> context:vector db answer
+    // Try parsing JSON
+    let parsed;
+    try {
+      parsed = JSON.parse(result);
+    } catch (err) {
+      return res.status(500).json({
+        error: 'LLM did not return valid JSON',
+        raw: result
+      });
+    }
 
-// so solution 2nd llm previous que + model answer + new que
-// reply what is quick sort in depth. (relavant query together,meaning ful together)
-// next time we give this proper context
+    res.json({ mcqs: parsed });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
