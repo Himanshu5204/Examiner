@@ -12,42 +12,40 @@ const History = [];
 
 
 async function generateMCQs(mcqCount) {
- 
-  //const queries = await transformQuery(userProblem); //find que meaning first
+  // Get the user's question (for MCQ generation, you can use a fixed prompt or ask the user)
+  const question = `Generate ${mcqCount} MCQs from the syllabus context`;
 
-  //converts this question into vector embedding
+  // Create embeddings instance
   const embeddings = new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GEMINI_API_KEY,
     model: 'text-embedding-004'
   });
-  //query vector / questionVector
-  //const queryVector = await embeddings.embedQuery(queries);
-  //console.log('Question converted to vector');
 
-  //Database connected - pinecone
+  // Embed the question to get the correct 768-dim vector
+  const queryVector = await embeddings.embedQuery(question);
+
+  // Connect to Pinecone
   const pinecone = new Pinecone();
   const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME);
 
+  // Query Pinecone with the embedded vector
   const searchResults = await pineconeIndex.query({
-    topK: 10, //10 result fetch
-    vector: Array(1536).fill(0), //queryVector,
+    topK: 10,
+    vector: queryVector,
     includeMetadata: true
   });
   console.log('Search results fetched from Pinecone', searchResults);
   console.log("Search Results:", searchResults.matches.length);
 
-  // top 10 documents : 10 metadata text needed that is part of 10 documents
-
-  // create the context for llm
+  // Build context for LLM
   const context = searchResults.matches
-    .map((match) => match.metadata.text) //take only text
+    .map((match) => match.metadata.text)
     .join('\n\n---\n\n');
-  //console.log('Context created for LLM:', context);
 
-  //Gemini model
+  // Gemini model
   History.push({
     role: 'user',
-    parts: [{ text: `Generate ${mcqCount} MCQs from the syllabus context` }]
+    parts: [{ text: question }]
   });
 
   const response = await ai.models.generateContent({
@@ -60,7 +58,6 @@ async function generateMCQs(mcqCount) {
                 For each question, also generate a **one-line answer**,4 different options in which one would be 
                 the correct answer**. 
 
-                
                 For each MCQ:
                     - Provide the question.  
                     - Give exactly 4 answer options (labeled A, B, C, D).  
@@ -102,12 +99,10 @@ async function generateMCQs(mcqCount) {
     parts: [{ text: response.text }]
   });
 
-  //console.log('\n');
   console.log(response.text);
 }
-
 //2nd llm to make context meaning full like (1st que + ans + 2nd que)
-// async function transformQuery(question) {
+// async function transform(question) {
 //   History.push({
 //     role: 'user',
 //     parts: [{ text: question }]
