@@ -76,19 +76,27 @@ const UpcomingExams = () => {
             <th>Name</th>
             <th>Date</th>
             <th>Exam Id</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
 
           {
             exams
-              .filter(exam => exam.Status == "Past")
+              .filter(exam => exam.Status === "Upcoming" || exam.Status === "Running")
               .slice(0, 3)
               .map((exam, idx) => (
                 <tr key={idx} className="border-b hover:bg-gray-50">
                   <td className="py-2">{exam.Name}</td>
                   <td>{exam.Date}</td>
                   <td>{exam.ExamId}</td>
+                  <td
+                    className={
+                      exam.Status === "Upcoming"
+                        ? "text-blue-500 font-semibold"
+                        : "text-green-600 font-semibold"
+                    }
+                  >{exam.Status}</td>
                 </tr>
               ))}
 
@@ -96,7 +104,7 @@ const UpcomingExams = () => {
       </table>
 
       {
-        exams.length > 0 && (
+        exams.length > 3 && (
           <div className="mt-4 flex justify-center">
             <button
               className="btn btn-outline btn-sm"

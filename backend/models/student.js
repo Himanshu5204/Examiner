@@ -37,11 +37,11 @@ const student = new mongoose.Schema({
         minlength: 10
     },
 
-    gender: {
-        type: String,
-        require: true,
-        trim: true,
-    },
+    // gender: {
+    //     type: String,
+    //     require: true,
+    //     trim: true,
+    // },
 
     token: {
         type: String
