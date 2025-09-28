@@ -20,24 +20,23 @@ const History = [];
 
 // 🔹 Function to generate MCQs
 async function generateMCQs(mcqCount) {
+  // Use the same embedding model and logic as index.js/query.js
   const embeddings = new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GEMINI_API_KEY,
-    model: 'embedding-001'
+    model: 'text-embedding-004'
   });
 
   // Pinecone setup
   const pinecone = new Pinecone();
   const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME);
 
-  // Example query string (could come from user input later)
-  const queryText = 'Generate MCQs from syllabus';
-
-  // Convert query into embedding (will be 1024 dim if using embedding-001)
-  const queryVector = await embeddings.embedQuery(queryText);
+  // Use the actual MCQ prompt as the query
+  const question = `Generate ${mcqCount} MCQs from the syllabus context`;
+  const queryVector = await embeddings.embedQuery(question);
 
   const searchResults = await pineconeIndex.query({
     topK: 10,
-    vector: queryVector, // ✅ use actual embedding
+    vector: queryVector,
     includeMetadata: true
   });
 
@@ -45,33 +44,51 @@ async function generateMCQs(mcqCount) {
 
   History.push({
     role: 'user',
-    parts: [{ text: `Generate ${mcqCount} MCQs from the syllabus context` }]
+    parts: [{ text: question }]
   });
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash',
     contents: History,
     config: {
-      systemInstruction: `
-        You are an intelligent exam question generator.
-        Generate ${mcqCount} MCQs from the syllabus context provided.
-        Output strictly in JSON format:
+      systemInstruction: `You are an intelligent exam question generator. 
+                You will be given a subject syllabus in the form of context. 
+                Your task is to generate **unique, moderate-level exam questions** from this syllabus. 
+                For each question, also generate a **one-line answer**,4 different options in which one would be 
+                the correct answer**. 
 
-        [
-          {
-            "question": "string",
-            "options": {
-              "A": "string",
-              "B": "string",
-              "C": "string",
-              "D": "string"
-            },
-            "correctAnswer": "A/B/C/D",
-            "explanation": "string"
-          }
-        ]
+                For each MCQ:
+                    - Provide the question.  
+                    - Give exactly 4 answer options (labeled A, B, C, D).  
+                    - Mark the correct option clearly.  
+                    - Provide a short explanation or proof (2–3 lines) that justifies the correct answer.  
+                    - Ensure the questions cover different topics within the syllabus to avoid repetition.
+                    - - Generate a total of **${mcqCount} MCQs**.
 
-        Context: ${context}
+                Guidelines:
+                - Questions must directly come from the provided syllabus/context. 
+                - Do not create questions outside the syllabus. 
+                - Avoid repetition of questions. 
+                - Keep the question difficulty at a moderate level (neither too easy nor too hard). 
+                - Ensure answers are short (one-line or two-liner maximum). 
+                - Maintain clarity, accuracy, and relevance.
+                - If no relevant content is found in the context, respond with:  
+                **"I could not generate a question from the provided syllabus."**
+
+                Example format:
+                    Q1: Which of the following best describes supervised learning?  
+                    A) Learning without labeled data  
+                    B) Learning using labeled input-output pairs  
+                    C) Learning through trial and error  
+                    D) Learning by clustering similar data  
+
+                    Correct Answer: B) Learning using labeled input-output pairs  
+
+                    Proof: In supervised learning, models are trained on labeled data where both input and correct output are provided, enabling the model to learn mappings.
+
+                and so on.
+
+      Context: ${context}
       `
     }
   });
