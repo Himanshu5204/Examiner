@@ -21,7 +21,6 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, uploadDir);
@@ -122,7 +121,6 @@ router.post('/student-exam', async (req, res) => {
     const response = Object.fromEntries(studentExamMap)
     res.status(200).json(response);
 })
-
 
 router.get('/allResult/:teacherId', async (req, res) => {
     const Id = req.params.teacherId;

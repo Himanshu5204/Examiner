@@ -14,9 +14,16 @@ const formatDateTime = (date) => {
     return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
-const getStudentsByExamId = async (course_id, dept_code) => {
+const getStudentsByExamId = async (course_id, dept_code, exam_id) => {
     const now = new Date();
-    const exams = await Exam.find({ course_id, endTime: { $lt: now } }, { _id: 0, exam_id: 1, startTime: 1, endTime: 1, questions: 1 }).sort({ startTime: -1 });
+    let exams;
+    // console.log(exam_id);
+    if (!exam_id) {
+        exams = await Exam.find({ course_id, endTime: { $lt: now } }, { _id: 0, exam_id: 1, startTime: 1, endTime: 1, questions: 1 }).sort({ startTime: -1 });
+    } else {
+        exams = await Exam.find({ exam_id, endTime: { $lt: now } }, { _id: 0, exam_id: 1, startTime: 1, endTime: 1, questions: 1 }).sort({ startTime: -1 })
+    }
+    // console.log(exams, "<Exams>");
     const examStudentMapping = new Map();
 
     const students = await StudentList.find({ course_id, dept_code }, { student_id: 1, _id: 0 });

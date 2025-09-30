@@ -11,14 +11,13 @@ const getGenderCounts = async (courseId, dept_code) => {
         { $group: { _id: "$gender", count: { $sum: 1 } } }
     ]);
 
-    // console.log(result);
-
     let totalMale = 0, totalFemale = 0, total = 0;
     result.forEach(r => {
         if (r._id === "male") totalMale = r.count;
         if (r._id === "female") totalFemale = r.count;
         total += r.count;
     });
+    // console.log(totalMale, totalFemale, total);
     return { totalMale, totalFemale, total };
 }
 

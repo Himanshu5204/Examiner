@@ -19,7 +19,7 @@ import StudentList from './pages/Teacher/StudentList';
 import SaveExam from './pages/Teacher/SaveExam';
 import MyExams from './pages/Teacher/MyExams';
 import Analytics from './pages/Teacher/Analytics';
-
+import AdminExamResults from './pages/Admin/AdminExamResults';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -104,6 +104,9 @@ function App() {
           <Route path="/teacher/create-exam" element={<SaveExam />} />
           <Route path="/teacher/exams" element={<MyExams />} />
           <Route path="/teacher/analytics" element={<Analytics />} />
+
+          {/* admin */}
+          <Route path="/admin/analytics" element={<AdminExamResults />} />
 
         </Routes>
       </Layout>

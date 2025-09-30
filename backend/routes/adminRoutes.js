@@ -15,6 +15,8 @@ const Dept = require('../models/dept');
 const xlsx = require('xlsx');
 const fs = require('fs');
 const multer = require('multer');
+const getAllCounts = require('../controller/Admin/getAllCounts');
+const getDeptWiseResult = require('../controller/Admin/getDeptWiseResult');
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -60,22 +62,22 @@ router.post('/teacherList', upload.single('xlsx'), async (req, res) => {
       }
 
       try {
-        // Check for existing teacher
-        const existingTeacher = await TeacherList.findOne({ teacher_id: teacherId });
-        if (!existingTeacher) {
-          const teacher = new TeacherList({
-            teacher_id: teacherId,
-            email: email,
-            course_id: courseCode,
-            dept_code: deptNo
+
+        // Check for existing dept
+        const existingDept = await Dept.findOne({ dept_code: deptNo });
+        if (!existingDept) {
+
+          const dept = new Dept({
+            dept_code: deptNo,
+            name: deptName
           });
-          await teacher.save();
-        } else {
-          skippedRows.push({ index: index + 2, reason: 'Duplicate teacher' });
+          await dept.save();
         }
 
         // Check for existing course
         const existingCourse = await Course.findOne({ course_id: courseCode });
+        const existingTeacher = await TeacherList.findOne({ teacher_id: teacherId });
+
         if (!existingCourse) {
           const course = new Course({
             course_id: courseCode,
@@ -84,23 +86,45 @@ router.post('/teacherList', upload.single('xlsx'), async (req, res) => {
             teacher_id: teacherId
           });
           await course.save();
+
+          if (!existingTeacher) {
+            const teacher = new TeacherList({
+              teacher_id: teacherId,
+              email: email,
+              course_id: courseCode,
+              dept_code: deptNo
+            });
+            await teacher.save();
+          } else {
+            skippedRows.push({ index: index + 2, reason: 'Duplicate Teacher' });
+          }
+
+        } else {
+          skippedRows.push({ index: index + 2, reason: 'Duplicate Course' });
         }
 
-        // Check for existing dept
-        const existingDept = await Dept.findOne({ dept_code: deptNo });
-        if (!existingDept) {
-          const dept = new Dept({
-            dept_code: deptNo,
-            name: deptName
-          });
-          await dept.save();
-        }
+        // Check for existing teacher
+        // const existingTeacher = await TeacherList.findOne({ teacher_id: teacherId });
+        // if (!existingTeacher) {
+        //   const teacher = new TeacherList({
+        //     teacher_id: teacherId,
+        //     email: email,
+        //     course_id: courseCode,
+        //     dept_code: deptNo
+        //   });
+        //   await teacher.save();
+        // } else {
+        //   skippedRows.push({ index: index + 2, reason: 'Duplicate teacher' });
+        // }
+
+
 
         savedCount++;
       } catch (err) {
         skippedRows.push({ index: index + 2, reason: err.message });
       }
     }
+
     // remove temp file safely
     try {
       if (fs.existsSync(filePath)) {
@@ -118,6 +142,18 @@ router.post('/teacherList', upload.single('xlsx'), async (req, res) => {
   } catch (error) {
     console.error('TeacherList Upload Error:', error);
     res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/counts', getAllCounts);
+
+router.get('/getResults', async (req, res) => {
+  try {
+    const result = await getDeptWiseResult();
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err });
   }
 });
 
