@@ -17,7 +17,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { Pinecone } from '@pinecone-database/pinecone';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from '@google/genai';
+//import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
 dotenv.config({ path: path.resolve('../.env') });
@@ -38,7 +39,8 @@ if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY.length < 20) {
   process.exit(1);
 }
 
-const ai = new GoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); //{apikey:""} new changes {}
+//const ai = new GoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // 🔹 Function to generate MCQs
 async function generateMCQs(mcqCount) {
@@ -66,47 +68,43 @@ async function generateMCQs(mcqCount) {
   if (!context.trim()) {
     return JSON.stringify([{ error: 'No relevant syllabus content found.' }]);
   }
-
-  const model = ai.getGenerativeModel({
+  
+  const result = await ai.models.generateContent({
     model: 'gemini-2.0-flash',
-    systemInstruction: {
-      role: 'system',
-      parts: [
-        {
-          text: `
-      You are an intelligent exam MCQ generator. 
-      Task: Generate ${mcqCount} unique, moderate-level MCQs from the given syllabus context.
+    contents: [
+      {
+        role: 'user',
+        parts: [{ text: `Context:\n${context}\n\nGenerate ${mcqCount} MCQs.` }]
+      }
+    ],
+    config: {
+      systemInstruction: `
+        You are an intelligent exam MCQ generator. 
+        Task: Generate ${mcqCount} unique, moderate-level MCQs from the given syllabus context.
 
-      Rules:
-      - Each question must be based ONLY on the provided context.
-      - Provide exactly 4 options (A–D), one correct answer, and a short 2–3 line explanation.
-      - Cover different topics to avoid repetition.
-      - Keep answers concise (max 2 lines).
-      - If no relevant content, reply: "I could not generate a question from the provided syllabus."
+        Rules:
+        - Each question must be based ONLY on the provided context.
+        - Provide exactly 4 options (A–D), one correct answer, and a short 2–3 line explanation.
+        - Cover different topics to avoid repetition.
+        - Keep answers concise (max 2 lines).
+        - If no relevant content, reply: "I could not generate a question from the provided syllabus."
 
-      Output format (JSON array):
-      [
-        {
-          "question": "...",
-          "options": ["A) ...", "B) ...", "C) ...", "D) ..."],
-          "correctAnswer": "B",
-          "explanation": "..."
-        }
-      ] `
-        }
-      ]
-    }
-  });
-
-  const result = await model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: `Context:\n${context}\n\nGenerate ${mcqCount} MCQs.` }] }],
+        Output format (JSON array):
+        [
+          {
+            "question": "...",
+            "options": ["A) ...", "B) ...", "C) ...", "D) ..."],
+            "correctAnswer": "B",
+            "explanation": "..."
+          }
+        ]`
+    },
     generationConfig: {
       responseMimeType: 'application/json'
     }
   });
 
-  const response = result.response;
-  return response.text();
+  return result.text;
 }
 
 // 🔹 API endpoint
