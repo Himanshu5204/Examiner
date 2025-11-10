@@ -71,6 +71,12 @@ const generatePDF = async (data) => {
                     .text(`Correct: ${q.correctAnswer}`);
 
                 doc.moveDown(1);
+
+                // Correct option
+                doc.fillColor('black')
+                    .text(`Reason: ${q.explanation}`);
+
+                doc.moveDown(1);
             });
 
             // ===== END DOCUMENT =====

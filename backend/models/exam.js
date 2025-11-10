@@ -50,6 +50,7 @@ const exam = new mongoose.Schema({
             questionText: String,
             options: [String],
             correctAnswer: String,
+            explanation: String
         },
     ],
 

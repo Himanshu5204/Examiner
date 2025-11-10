@@ -22,7 +22,7 @@ const Sidebar = () => {
       <h1 className="text-2xl font-bold text-green-600 mb-4">Student Panel</h1>
       <nav className="flex flex-col gap-4">
         <NavLink
-          to="/student/dashboard"
+          to="/StudentDashboard"
           className={({ isActive }) =>
             `flex items-center gap-2 ${isActive ? 'text-green-600 font-semibold' : 'hover:text-green-500'}`
           }
