@@ -145,6 +145,11 @@ const Login = () => {
         <span>Don't have an account? </span>
         <Link to='/signup'>Sign up</Link>
       </div>
+
+      <div className='mt-3 text-center'>
+        <Link to='/forgot-password'>Forgot Password?</Link>
+      </div>
+
     </div>
   );
 };

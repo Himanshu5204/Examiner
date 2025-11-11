@@ -20,6 +20,9 @@ import SaveExam from './pages/Teacher/SaveExam';
 import MyExams from './pages/Teacher/MyExams';
 import Analytics from './pages/Teacher/Analytics';
 import AdminExamResults from './pages/Admin/AdminExamResults';
+import ResetPassword from './pages/ResetPassword';
+import ForgotPassword from './pages/ForgotPassword';
+import Verify from './pages/Verify';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -52,8 +55,13 @@ function App() {
     <Router>
       <Layout>
         <Routes>
+
           <Route path='/signup' element={<Signup />} />
           <Route path='/login' element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify" element={<Verify />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
           <Route
             path='/'
             element={

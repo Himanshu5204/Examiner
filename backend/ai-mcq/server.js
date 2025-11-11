@@ -161,7 +161,6 @@ const { Pinecone } = require('@pinecone-database/pinecone');
 const { PineconeStore } = require('@langchain/pinecone');
 const { GoogleGenAI } = require('@google/genai');
 
-
 dotenv.config({ path: path.resolve('../.env') });
 const router = express.Router();
 const app = express();

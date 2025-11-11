@@ -14,9 +14,9 @@ const Sidebar = () => {
   // Sidebar links with actions
   const links = [
     { name: 'Dashboard', path: '/AdminDashboard' },
-    { name: 'Students', path: '/admin/students' },
+    // { name: 'Students', path: '/admin/students' },
     { name: 'Teachers', path: '/admin/upload-teachers' },
-    { name: 'Exam', path: '/admin/exams' },
+    // { name: 'Exam', path: '/admin/exams' },
     // { name: 'Events', path: '/admin/events' },
     { name: 'Analytics', path: '/admin/analytics' },
     // { name: 'Help center', path: '/admin/help' },
