@@ -11,6 +11,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
 const authentication = require('./routes/authentication');
+const aiRoute = require('./ai-mcq/server');
 
 const PORT = process.env.PORT || 80;
 const app = express();
@@ -28,7 +29,7 @@ app.use('/api/auth', authentication); //all user authentication
 app.use('/api/admin', adminRoutes);
 app.use('/api/teacher', teacherRoutes);
 app.use('/api/student', studentRoutes);
-
+app.use('/api/ai', aiRoute);
 
 connectDB().then(() => {
     app.listen(PORT, () => {

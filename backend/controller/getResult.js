@@ -46,6 +46,7 @@ const getResult = async (studentId, examId) => {
             options: ques.options,
             selectedAnswer: studentAnswer[questionNo],
             correctAnswer: ques.correctAnswer,
+            explanation: ques.explanation
         }
     })
 
@@ -56,7 +57,8 @@ const getResult = async (studentId, examId) => {
         dept: (await Dept.findOne({ dept_code: exams.dept_code })).name,
         date: formatDateTime(exams.startTime)
     }
-    // console.log(pdfData);
+    console.log(result);
+
     // console.log(formatDateTime(dateOfExam));
 
     return { result: result, score: score, pdfData };

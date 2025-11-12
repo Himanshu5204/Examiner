@@ -9,12 +9,14 @@ const Profile = () => {
   const [role, setRole] = useState();
   const [dept, setDept] = useState();
   const navigate = useNavigate();
+
   const getDept = async () => {
     const data = await fetch(`http://localhost:8000/api/student/get-dept/${user.student_id}`);
     const dataJson = await data.json();
     setDept(dataJson.dept);
     console.log(dataJson.dept);
   }
+
   useEffect(() => {
     if (user.teacher_id !== undefined) {
       setId(user.teacher_id);
@@ -32,10 +34,16 @@ const Profile = () => {
       setRole("Unknown")
     }
   }, [])
+
   const handleLogout = () => {
     logout();          // clear auth/session
     navigate("/login"); // redirect to login
   };
+
+  const reset = () => {
+    const email = user.email;
+    navigate("/reset-password", { state: { email } });
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -84,7 +92,7 @@ const Profile = () => {
           </div>
 
           {/* Change Password */}
-          <button
+          {/* <button
             className="w-full bg-blue-500 text-white py-2 rounded-lg mt-4 hover:bg-blue-600"
             onClick={() => setShowChangePassword(!showChangePassword)}
           >
@@ -101,15 +109,16 @@ const Profile = () => {
                 type="password"
                 placeholder="Confirm Password"
                 className="w-full border rounded-lg p-2"
-              />
-              <button
-                type="submit"
-                className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600"
-              >
-                Update Password
-              </button>
-            </form>
-          )}
+              /> */}
+          <button
+            type="submit"
+            className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600"
+            onClick={reset}
+          >
+            Update Password
+          </button>
+          {/* </form>
+          )} */}
 
           {/* Logout */}
           <button

@@ -3,7 +3,7 @@ const { getStudentsByExamId } = require("../Analytics");
 const Exam = getSchema['exam'];
 
 const getDeptWiseResult = async () => {
-    const exams = await Exam.find({}, { exam_id: 1, course_id: 1, dept_code: 1, teacher_id: 1, _id: 0 });
+    const exams = await Exam.find({}, { exam_id: 1, course_id: 1, dept_code: 1, teacher_id: 1, _id: 0 }).sort({ startTime: -1 });
 
     const res = [];
     console.log(exams);

@@ -24,8 +24,9 @@ const AdminExamResults = () => {
     useEffect(() => {
         fetch("http://localhost:8000/api/admin/getResults/")
             .then(res => res.json())
-            .then(res => setData(res))
+            .then((res) => { setData(res); console.log(res) })
             .catch(err => console.error(err));
+
     }, []);
 
     // Reset course and exam when dept changes
@@ -133,7 +134,7 @@ const AdminExamResults = () => {
                     <option value="">Select Exam</option>
                     {examsForCourse.map(e => (
                         <option key={e.exam_id} value={e.exam_id}>
-                            {e.exam_id} - {e[selectedExam]?.date || "Exam Date"}
+                            {e.exam_id} - {e[e.exam_id]?.date || "Exam Date"}
                         </option>
                     ))}
                 </select>

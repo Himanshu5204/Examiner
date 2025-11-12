@@ -225,4 +225,134 @@ const signup = async (req, res) => {
   }
 };
 
-module.exports = { login, signup, getUser, fetchuser };
+/*
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  requireTLS: true,
+  auth: {
+    user: 'jointomeet.com@gmail.com',
+    pass: "@Aryan1509"
+  }
+});
+
+
+async function mailer(recieverEmail, varificationCode) {
+  const info = await transporter.sendMail({
+    from: 'JOiNTOMEET',
+    to: recieverEmail,
+    subject: "Authentication",
+    text: `Hello User`,
+    html: `Your OTP code is <b>${varificationCode}</b>`,
+  });
+
+  console.log("varification code send");
+  console.log("Message sent: %s", info.messageId);
+}
+
+
+async function mailer2(name, recieverEmail, varificationCode) {
+  const info = await transporter.sendMail({
+    from: 'JOiNTOMEET',
+    to: recieverEmail,
+    subject: "Authentication",
+    text: `Hello ${name}`,
+    html: `Your Varification code is <b>${varificationCode}</b>`,
+  });
+
+  console.log("varification code send");
+  console.log("Message sent: %s", info.messageId);
+}
+*/
+const nodemailer = require("nodemailer");
+let otpStore = {};
+
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  requireTLS: true,
+  auth: {
+    user: 'jointomeet.com@gmail.com',
+    pass: "xtpj rgas sqnm iysw"
+  }
+});
+
+
+async function mailer(recieverEmail, varificationCode) {
+  const info = await transporter.sendMail({
+    from: 'JOiNTOMEET',
+    to: recieverEmail,
+    subject: "Authentication",
+    text: `Hello User`,
+    html: `Your OTP code is <b>${varificationCode}</b>`,
+  });
+
+  console.log("varification code send");
+  console.log("Message sent: %s", info.messageId);
+}
+/*
+/     user: 'jointomeet.com@gmail.com',
+/     pass: "@Aryan1509Nayak"
+*/
+
+const sendCode = async (req, res) => {
+  const { email, role } = req.body;
+  const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit code
+  otpStore[email] = otp;
+  console.log(otpStore);
+  try {
+    await mailer(email, otp);
+    res.json({ success: true, message: "OTP sent to email" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Error sending email" });
+  }
+}
+
+const verify = async (req, res) => {
+  const { email, otp } = req.body;
+  console.log(otpStore);
+  if (otpStore[email] && otpStore[email].toString() === otp.toString()) {
+    delete otpStore[email]; // clear after success
+    res.json({ success: true, message: "OTP verified" });
+  } else {
+    res.status(400).json({ success: false, message: "Invalid OTP" });
+  }
+}
+
+const resetPassword = async (req, res) => {
+  const { role, email, password } = req.body;
+  console.log(role, email, password);
+
+  if (!role || !email || !password) {
+    return res.status(400).json({ success: false, message: "Missing fields" });
+  }
+  try {
+    const model = getSchema[role];
+    if (!model) {
+      return res.status(400).json({ success: false, message: "Invalid role" });
+    }
+    console.log("found role");
+
+    const user = await model.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "User not found" });
+    }
+    console.log("found user");
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await model.updateOne({ email }, { password: hashedPassword });
+
+    res.status(200).json({ success: true, message: "Password reset successful!" });
+  } catch (err) {
+    console.error("Error resetting password:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+module.exports = { login, signup, getUser, fetchuser, sendCode, verify, resetPassword };

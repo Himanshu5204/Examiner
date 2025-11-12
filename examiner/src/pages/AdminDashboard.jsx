@@ -15,7 +15,7 @@ const AdminDashboard = () => {
         <StatsCards />
         <div className="grid grid-cols-2 gap-6">
           <GenderPieChart />
-          <AttendanceChart />
+          {/* <AttendanceChart /> */}
         </div>
 
         {/* 
