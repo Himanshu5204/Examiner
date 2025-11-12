@@ -1,4 +1,5 @@
 //Phase 2: Query Resolving phase
+//query.js is a command line helper (debug purpose only) and is not part of the server flow.
 import dotenv from 'dotenv';
 import path from 'path';
 import readlineSync from 'readline-sync';
