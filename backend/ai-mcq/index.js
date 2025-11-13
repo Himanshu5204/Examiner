@@ -87,4 +87,5 @@ async function indexDocument() {
     }
   }
 }
+
 indexDocument();

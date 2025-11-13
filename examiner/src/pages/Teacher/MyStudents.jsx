@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
 // src/pages/Teacher/MyStudents.jsx
 const MyStudents = () => {
-
+  const { user } = useAuth();
   const [students, setStudents] = useState([]);
   const navigate = useNavigate();
   const getStudent = async () => {
-    const res = await fetch('http://localhost:8000/api/teacher/studentsStatus');
+    const crs = user.course_id;
+    const dept = user.dept_code;
+    // const res = await fetch('http://localhost:8000/api/teacher/studentsStatus');
+    const res = await fetch('http://localhost:8000/api/teacher/studentsStatus', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        crs,
+        dept,
+      }),
+    });
     const studentData = await res.json();
     console.log(studentData);
     setStudents(studentData);

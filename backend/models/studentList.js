@@ -5,7 +5,7 @@ const studentList = new mongoose.Schema(
         student_id: {
             type: String,
             require: true,
-            unique: true,
+            // unique: true,
             trim: true
         },
         email: {
@@ -34,7 +34,10 @@ const studentList = new mongoose.Schema(
         }
     }
 );
-
+studentList.index(
+    { dept_code: 1, course_id: 1, student_id: 1 },
+    { unique: true }
+);
 const StudentList = mongoose.model('StudentList', studentList);
 
 module.exports = StudentList;

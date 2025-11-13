@@ -55,13 +55,18 @@ const generatePDF = async (data) => {
                     // console.log(opt, q.correctAnswer, q.selectedAnswer);
 
                     if (opt === q.correctAnswer) {
-                        if (q.selectedAnswer === opt) {
-                            doc.fillColor('blue').text(`   ${letter}. ${opt}`);
-                        } else {
-                            doc.fillColor('red').text(`   ${letter}. ${opt}`);
-                        }
+                        // if (q.selectedAnswer === opt) {
+                        doc.fillColor('blue').text(`   ${letter}. ${opt}`);
+                        // } else {
+                        // doc.fillColor('red').text(`   ${letter}. ${opt}`);
+                        // }
                     } else {
-                        doc.fillColor('black').text(`   ${letter}. ${opt}`);
+                        if (q.selectedAnswer === opt) {
+                            doc.fillColor('red').text(`   ${letter}. ${opt}`);
+                            // doc.fillColor('blue').text(`   ${letter}. ${opt}`);
+                        } else {
+                            doc.fillColor('black').text(`   ${letter}. ${opt}`);
+                        }
                     }
 
                 });
