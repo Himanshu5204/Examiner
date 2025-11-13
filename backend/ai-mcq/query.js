@@ -11,7 +11,6 @@ dotenv.config({ path: path.resolve('../.env') });
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); //{apikey:""} new changes {}
 const History = [];
 
-
 async function generateMCQs(mcqCount) {
   // Get the user's question (for MCQ generation, you can use a fixed prompt or ask the user)
   const question = `Generate ${mcqCount} MCQs from the syllabus context`;

@@ -48,6 +48,7 @@ router.post('/studentList', upload.single('xlsx'), async (req, res) => {
         let skippedRows = [];
 
         for (const [index, row] of data.entries()) {
+            console.log(index);
             if (!row.StudentId || !row.Email || !row.CourseCode || !row.DeptNo) {
                 skippedRows.push({ index: index + 2, reason: 'Missing required columns' }); // +2 for Excel row number
                 continue;
@@ -60,6 +61,7 @@ router.post('/studentList', upload.single('xlsx'), async (req, res) => {
                     dept_code: row.DeptNo,
                     gender: row.Gender
                 });
+                console.log(student);
                 await student.save();
                 savedCount++;
             } catch (err) {
@@ -95,7 +97,7 @@ router.get('/exams/:teacherId', async (req, res) => {
     }
 });
 
-router.get('/studentsStatus', getStudentStatus);
+router.post('/studentsStatus', getStudentStatus);
 
 router.get('/deleteStudentList', async (req, res) => {
     await StudentList.deleteMany();

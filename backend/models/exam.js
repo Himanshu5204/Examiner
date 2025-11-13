@@ -13,7 +13,6 @@ const exam = new mongoose.Schema({
         type: String,
         require: true,
         trim: true,
-        lowercase: true,
         maxlength: 50
     },
 

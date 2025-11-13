@@ -1,14 +1,29 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-
+import { useAuth } from "../Context/AuthContext";
 const StudentList = () => {
     const location = useLocation();
+    const { user } = useAuth();
     const [students, setStudents] = useState(location.state?.students || []);
 
     const getStudent = async () => {
         try {
-            const res = await fetch("http://localhost:8000/api/teacher/studentsStatus");
+            const crs = user.course_id;
+            const dept = user.dept_code;
+            // const res = await fetch('http://localhost:8000/api/teacher/studentsStatus');
+            const res = await fetch('http://localhost:8000/api/teacher/studentsStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    crs,
+                    dept,
+                }),
+            });
+            // const res = await fetch("http://localhost:8000/api/teacher/studentsStatus");
             const studentData = await res.json();
+            console.log(studentData);
             setStudents(studentData);
         } catch (error) {
             console.error("Error fetching students:", error);

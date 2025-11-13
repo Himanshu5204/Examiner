@@ -32,8 +32,8 @@ const createStudent = async (data) => {
             return { status: 403, user: null };
         }
 
-        //change state of teacher loggdin(false -> true)
-        await StudentList.updateOne({ student_id: student_id }, { loggedin: true });
+        //change state of student loggdin(false -> true)
+        await StudentList.updateMany({ student_id: student_id }, { loggedin: true });
 
         const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
@@ -88,7 +88,7 @@ const createTeacher = async (data) => {
         }
 
         //change state of teacher loggdin(false -> true)
-        await TeacherList.updateOne({ teacher_id: teacher_id }, { loggedin: true });
+        await TeacherList.updateMany({ teacher_id: teacher_id }, { loggedin: true });
 
         const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 

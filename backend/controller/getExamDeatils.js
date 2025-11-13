@@ -16,11 +16,11 @@ const formatDateTime = (date) => {
 const getExamDeatils = async (exam_id) => {
     const exams = await exam.findOne({ exam_id }, { course_id: 1, teacher_id: 1, startTime: 1, endTime: 1, _id: 0, questions: 1 });
 
-    // console.log(exams);
+    console.log(exams, "{exams}");
     const tId = exams.teacher_id, cId = exams.course_id;
-    // console.log(tId, cId);
+    console.log(tId, cId, "{teacher and course id}");
     const teacherData = await teacher.findOne({ teacher_id: tId }, { name: 1, _id: 0 });
-    // console.log(teacherName, courseName);
+    console.log(teacherData.name, cId, "{teacher name and course name}");
 
     const duration = (new Date(exams.endTime) - new Date(exams.startTime)) / (1000 * 60);
 
